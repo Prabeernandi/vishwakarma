@@ -12,7 +12,7 @@ public interface VillageService {
 
     List<Village> findAll();
 
-    List<LocationLists> findByBlockCode(String id);
+    List<LocationLists> findByBlockCode(String blockId);
 
     VillageCountDTO getCountsInVillage(String villageId);
 }

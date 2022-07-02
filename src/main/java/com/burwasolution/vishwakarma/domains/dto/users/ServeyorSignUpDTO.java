@@ -17,7 +17,7 @@ public class ServeyorSignUpDTO {
     private String gender;
     private Date dateOfBirth;
     private String emailId;
-    private long mobileNumber;
+    private String mobileNumber;
     private String govtDepart;
     private String govtId;
     private String designation;

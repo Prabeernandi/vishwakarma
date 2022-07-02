@@ -16,6 +16,7 @@ public class FamilyListDTO {
     private String name;
     private String userId;
     private String familyId;
+    private String id;
     private int members;
     private String stateCode;
     private String districtCode;
@@ -23,6 +24,6 @@ public class FamilyListDTO {
     private String blockCode;
     private String villageCode;
     private String category;
-    private String aadharNo;
+    private String idNo;
 
 }

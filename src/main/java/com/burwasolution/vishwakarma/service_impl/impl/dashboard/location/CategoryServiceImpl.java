@@ -39,8 +39,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<LocationLists> findByVillageCode(String id) {
-        List<Category> categories = categoryRepository.findByVillageCode(id);
+    public List<LocationLists> findByVillageCode(String villageId) {
+        List<Category> categories = categoryRepository.findByVillageCode(villageId);
         List<LocationLists> locationArray = new ArrayList<>();
 
         for (Category category : categories) {

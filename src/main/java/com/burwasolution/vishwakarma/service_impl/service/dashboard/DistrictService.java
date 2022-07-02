@@ -11,7 +11,7 @@ public interface DistrictService {
 
     List<District> findAll();
 
-    List<LocationLists> findByStateCode(String id);
+    List<LocationLists> findByStateCode(String stateId);
 
 //    List<DistrictCountDTO> getCountsInDistrict(String districtId);
 }

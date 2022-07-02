@@ -15,6 +15,6 @@ public class ServeyorOtp {
 
     private String otp;
     private Date expiryTime;
-    private long mobileNumber;
+    private String mobileNumber;
     private String message;
 }

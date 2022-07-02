@@ -22,6 +22,10 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     List<Users> findByVoterId(String idNo);
     List<Users> findByBhulekhId(String idNo);
     List<Users> findByManrekaRegNo(String idNo);
-
     List<Users> findByRationCardNumber(String idNo);
+    Users findUserByRationCardNumber(String idNo);
+    Users findUserByManrekaRegNo(String idNo);
+    Users findUserByBhulekhId(String idNo);
+    Users findUserByVoterId(String idNo);
+    Users findUserByVoterIdAndFamilyId(String voterId, String familyId);
 }

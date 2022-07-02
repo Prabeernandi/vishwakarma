@@ -39,9 +39,9 @@ public class BlockServiceImpl implements BlockService {
     }
 
     @Override
-    public List<LocationLists> findByTehsilCode(String id) {
+    public List<LocationLists> findByTehsilCode(String tehsilId) {
 
-        List<Blocks> blocks = blockRepository.findyByTehsilCode(id);
+        List<Blocks> blocks = blockRepository.findyByTehsilCode(tehsilId);
         List<LocationLists> locationArray = new ArrayList<>();
 
         for (Blocks setBlocks : blocks) {

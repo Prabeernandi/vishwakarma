@@ -12,7 +12,7 @@ public interface TehsilService {
 
     List<Tehsil> findAll();
 
-    List<LocationLists> findByDistrictCode(String id);
+    List<LocationLists> findByDistrictCode(String districtId);
 
     TehsilCountDTO getCountsInTehsil(String tehsilId);
 }

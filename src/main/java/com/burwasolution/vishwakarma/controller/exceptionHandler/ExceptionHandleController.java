@@ -1,6 +1,7 @@
 package com.burwasolution.vishwakarma.controller.exceptionHandler;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @ControllerAdvice
@@ -20,12 +23,9 @@ public class ExceptionHandleController implements ErrorController {
     @ExceptionHandler(NullPointerException.class)
     private ResponseEntity<Error> handleNullPointerError(NullPointerException error) {
         log.error(error.getMessage());
-        Result result = new Result();
-        result.setResult(error.getLocalizedMessage());
-        List<Result> setResult = new ArrayList<>();
-        setResult.add(result);
-        Error errorMsg = new Error(HttpStatus.NOT_FOUND, error.getLocalizedMessage(), setResult);
-        return new ResponseEntity<>(errorMsg, HttpStatus.NOT_FOUND);
+
+        Error errorMsg = new Error("Error", error.getLocalizedMessage(), null);
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
@@ -41,23 +41,26 @@ public class ExceptionHandleController implements ErrorController {
     @ExceptionHandler(NoSuchElementException.class)
     private ResponseEntity<Error> handleElementError(NoSuchElementException error) {
         log.error(error.getMessage());
-        Result result = new Result();
-        result.setResult(error.getLocalizedMessage());
-        List<Result> setResult = new ArrayList<>();
-        setResult.add(result);
-        Error errorMsg = new Error(HttpStatus.NOT_FOUND, error.getLocalizedMessage(), setResult);
-        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_GATEWAY);
+
+        Error errorMsg = new Error("Error", error.getMessage(), null);
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NotFoundException.class)
+    private ResponseEntity<Error> handleNotFound(NotFoundException error) {
+        log.error(error.getMessage());
+
+        Error errorMsg = new Error("Error", error.getMessage(), null);
+        return new ResponseEntity<>(errorMsg, HttpStatus.OK);
+    }
+
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     private ResponseEntity<?> handleMissingInput(HttpMessageNotReadableException error) {
         log.error(error.getMessage());
-        Result result = new Result();
-        result.setResult("Required Request Body is Missing");
-        List<Result> setResult = new ArrayList<>();
-        setResult.add(result);
-        Error errorMsg = new Error(HttpStatus.BAD_GATEWAY, "Required Request Body is Missing", setResult);
-        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_GATEWAY);
+
+        Error errorMsg = new Error("Error", "Required Request Body is Missing", null);
+        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AuthenticationException.class)
@@ -70,12 +73,12 @@ public class ExceptionHandleController implements ErrorController {
 
 
     @ExceptionHandler(ResourceAlreadyExists.class)
-    public ResponseEntity<ExceptionResponse> handleResourceExistsException(ResourceAlreadyExists error) {
-        ExceptionResponse response = new ExceptionResponse();
-        response.setErrorCode("CONFLICT");
-        response.setErrorMessage("Username " + error.getMessage() + " Already Exists.");
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    public ResponseEntity<?> handleResourceExistsException(ResourceAlreadyExists error) {
+
+        Error errorMsg = new Error("Error", "The User us already Registered", null);
+        return new ResponseEntity<>(errorMsg, HttpStatus.OK);
     }
+
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ExceptionResponse> usernameNotFoundException(UsernameNotFoundException error) {

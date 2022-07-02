@@ -43,8 +43,8 @@ public class VillageServiceImpl implements VillageService {
     }
 
     @Override
-    public List<LocationLists> findByBlockCode(String id) {
-        List<Village> villageList = villageRepository.findByBlockCode(id);
+    public List<LocationLists> findByBlockCode(String blockId) {
+        List<Village> villageList = villageRepository.findByBlockCode(blockId);
         List<LocationLists> locationArray = new ArrayList<>();
 
         for (Village village : villageList) {

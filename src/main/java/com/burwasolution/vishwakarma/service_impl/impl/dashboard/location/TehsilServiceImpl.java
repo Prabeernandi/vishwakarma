@@ -39,8 +39,8 @@ public class TehsilServiceImpl implements TehsilService {
     }
 
     @Override
-    public List<LocationLists> findByDistrictCode(String id) {
-        List<Tehsil> tehsils = tehsilRepository.findByDistrictCode(id);
+    public List<LocationLists> findByDistrictCode(String districtId) {
+        List<Tehsil> tehsils = tehsilRepository.findByDistrictCode(districtId);
         List<LocationLists> locationLists = new ArrayList<>();
         for (Tehsil list : tehsils) {
             LocationLists setTehsilList = LocationLists.builder()

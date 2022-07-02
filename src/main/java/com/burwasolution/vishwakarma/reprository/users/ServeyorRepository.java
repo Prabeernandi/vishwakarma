@@ -6,5 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface ServeyorRepository extends MongoRepository<Serveyor, String> {
     Serveyor findByUsername(String username);
 
-    Serveyor findByMobileNumber(long mobileNumber);
+    Serveyor findByMobileNumber(String  mobileNumber);
+
+    Serveyor findByEmailId(String emailId);
 }

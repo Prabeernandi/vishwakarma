@@ -8,9 +8,6 @@ import java.util.List;
 
 public interface OtpRepository extends MongoRepository<Otp, String> {
 
-    @Query(value = "db.otp.find({})" +
-            "   .projection({})" +
-            "   .sort({_id:-1})" +
-            "   .limit(1)")
-    List<Otp> findByMobileNumber(long mobileNumber);
+    @Query(value = "{$and: [{'mobileNumber':?0},{'otp':?1}]}).limit(1).sort({ _id:-1 }")
+    List<Otp> findByMobileNumberAndOtp(String mobileNumber, String otp);
 }

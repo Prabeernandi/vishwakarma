@@ -57,11 +57,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers("/admin/login", "/admin/insertUsers","/admin/serveyorSignUp").permitAll()
-                .antMatchers("/admin/sendOtp","/admin/verifyOtp").permitAll()
-                .antMatchers("/admin/unVerifiedMemberDetails","/admin/getFamilyMemberDetails").permitAll()
+                .antMatchers("/admin/login", "/admin/insertUsers", "/admin/serveyorSignUp").permitAll()
+                .antMatchers("/admin/sendOtp", "/admin/verifyOtp").permitAll()
+                .antMatchers("/admin/unVerifiedMemberDetails", "/admin/getFamilyMemberDetails").permitAll()
                 .antMatchers("/dashboard/saveHeaderFilter", "/dashboard/getHeaderAgeFilter").permitAll()
-                .antMatchers("/dashboard/getHeaderGenderFilter").permitAll()
+                .antMatchers("/dashboard/getHeaderGenderFilter", "/dashboard/saveBlockData").permitAll()
                 .antMatchers("/dashboard/getStateList", "/dashboard/getDistrictList", "/dashboard/getTehsilList",
                         "/dashboard/getBlockList", "/dashboard/getVillageList", "/dashboard/getCategoryList").permitAll()
                 .antMatchers("/dashboard/saveStateDetails", "/dashboard/saveDistrictData", "/dashboard/saveTehsilData",

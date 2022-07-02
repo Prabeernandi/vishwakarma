@@ -60,6 +60,7 @@ public class Users extends BaseObject {
     private String authToken;
     private String panCardNo;
     private String epf_nps;
+    private boolean isVerified = true;
     private String gramPanchayat;
     private String nameOfCraft;
     private boolean hasRashanCard;

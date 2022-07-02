@@ -47,9 +47,9 @@ public class DistrictServiceImpl implements DistrictService {
     }
 
     @Override
-    public List<LocationLists> findByStateCode(String id) {
+    public List<LocationLists> findByStateCode(String stateId) {
 
-        List<District> districtList = districtRepository.findAllByStateCode(id);
+        List<District> districtList = districtRepository.findAllByStateCode(stateId);
         List<LocationLists> locationLists = new ArrayList<>();
 
         for (District getDistrict : districtList) {

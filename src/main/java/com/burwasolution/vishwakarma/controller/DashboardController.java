@@ -3,21 +3,20 @@ package com.burwasolution.vishwakarma.controller;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
 import com.burwasolution.vishwakarma.domains.dto.response.location.*;
+import com.burwasolution.vishwakarma.domains.entity.location.Blocks;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.service_impl.service.dashboard.*;
 import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
@@ -61,54 +60,54 @@ public class DashboardController {
     }
 
     @GetMapping("/getDistrictList")
-    private ResponseEntity<?> getDistrictListByStateCode(@RequestParam String id) {
+    private ResponseEntity<?> getDistrictListByStateCode(@RequestParam String stateId) {
 
         Map<String, Object> getDistrictList = new HashMap<>();
         getDistrictList.put("status", HttpStatus.OK);
-        getDistrictList.put("result", districtService.findByStateCode(id));
+        getDistrictList.put("result", districtService.findByStateCode(stateId));
         getDistrictList.put("message", "District List");
 
         return new ResponseEntity<>(getDistrictList, HttpStatus.OK);
     }
 
     @GetMapping("/getTehsilList")
-    private ResponseEntity<?> getTehsilListbyDistrictCode(@RequestParam String id) {
+    private ResponseEntity<?> getTehsilListbyDistrictCode(@RequestParam String districtId) {
 
         Map<String, Object> getTehsilList = new HashMap<>();
         getTehsilList.put("status", HttpStatus.OK);
-        getTehsilList.put("result", tehsilService.findByDistrictCode(id));
+        getTehsilList.put("result", tehsilService.findByDistrictCode(districtId));
         getTehsilList.put("message", "District List");
 
         return new ResponseEntity<>(getTehsilList, HttpStatus.OK);
     }
 
     @GetMapping("/getBlockList")
-    private ResponseEntity<?> getBlockListbyTehsilCode(@RequestParam String id) {
+    private ResponseEntity<?> getBlockListbyTehsilCode(@RequestParam String tehsilId) {
         Map<String, Object> getBlockList = new HashMap<>();
         getBlockList.put("status", HttpStatus.OK);
-        getBlockList.put("result", blockService.findByTehsilCode(id));
+        getBlockList.put("result", blockService.findByTehsilCode(tehsilId));
         getBlockList.put("message", "District List");
 
         return new ResponseEntity<>(getBlockList, HttpStatus.OK);
     }
 
     @GetMapping("/getVillageList")
-    private ResponseEntity<?> getVillageListByBlockCode(@RequestParam String id) {
+    private ResponseEntity<?> getVillageListByBlockCode(@RequestParam String blockId) {
 
         Map<String, Object> getVillageList = new HashMap<>();
         getVillageList.put("status", HttpStatus.OK);
-        getVillageList.put("result", villageService.findByBlockCode(id));
+        getVillageList.put("result", villageService.findByBlockCode(blockId));
         getVillageList.put("message", "District List");
 
         return new ResponseEntity<>(getVillageList, HttpStatus.OK);
     }
 
     @GetMapping("/getCategoryList")
-    private ResponseEntity<?> getCategoryListByVillageCode(@RequestParam String id) {
+    private ResponseEntity<?> getCategoryListByVillageCode(@RequestParam String villageId) {
 
         Map<String, Object> getCategoryList = new HashMap<>();
         getCategoryList.put("status", HttpStatus.OK);
-        getCategoryList.put("result", categoryService.findByVillageCode(id));
+        getCategoryList.put("result", categoryService.findByVillageCode(villageId));
         getCategoryList.put("message", "District List");
 
         return new ResponseEntity<>(getCategoryList, HttpStatus.OK);
@@ -129,10 +128,10 @@ public class DashboardController {
 //        return tehsilService.saveData(tehsil);
 //    }
 //
-//    @PostMapping("/saveBlockData")
-//    private List<Blocks> saveBlockData(@RequestBody List<Blocks> blocks) {
-//        return blockService.saveData(blocks);
-//    }
+    @PostMapping("/saveBlockData")
+    private List<Blocks> saveBlockData(@RequestBody List<Blocks> blocks) {
+        return blockService.saveData(blocks);
+    }
 //
 //    @PostMapping("/saveVillageData")
 //    private List<Village> saveVillageData(@RequestBody List<Village> village) {

@@ -4,6 +4,7 @@ import com.burwasolution.vishwakarma.config.JwtUtils;
 import com.burwasolution.vishwakarma.controller.exceptionHandler.CustomException;
 import com.burwasolution.vishwakarma.controller.exceptionHandler.ResourceAlreadyExists;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.LoginUser;
 import com.burwasolution.vishwakarma.domains.dto.users.ServeyorOtp;
 import com.burwasolution.vishwakarma.domains.dto.users.ServeyorSignUpDTO;
@@ -16,6 +17,7 @@ import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
 import com.burwasolution.vishwakarma.service_impl.service.CountAllService;
 import com.burwasolution.vishwakarma.service_impl.service.RoleService;
 import com.burwasolution.vishwakarma.service_impl.service.UserService;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -188,6 +190,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .mobileNumber(userlist.getMobileNumber())
                         .stateCode(userlist.getStateCode())
                         .districtCode(userlist.getDistrictCode())
+                        .tehsilName(userlist.getTehsilName())
                         .tehsilCode(userlist.getTehsilCode())
                         .blockCode(userlist.getBlockCode())
                         .aadharNo(userlist.getAadharNo())
@@ -247,16 +250,25 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ServeyorSignUpDTO serveyorSignUp(Serveyor serveyor) {
+    public ServeyorSignUpDTO serveyorSignUp(Serveyor serveyor) throws NotFoundException {
 
         Serveyor serveyorCheck = serveyorRepository.findByUsername(serveyor.getUsername());
+        Serveyor serveyorMobileCheck = serveyorRepository.findByMobileNumber(serveyor.getMobileNumber());
+        Serveyor serveyorEmailCheck = serveyorRepository.findByEmailId(serveyor.getEmailId());
+
         if (serveyorCheck != null) {
             throw new ResourceAlreadyExists(serveyor.getUsername());
+        } else if (serveyorMobileCheck != null) {
+            throw new NotFoundException("The Mobile Number is Already Registered");
+        } else if (serveyorEmailCheck != null) {
+            throw new NotFoundException("The Email Id is Already Registered");
+        } else if (serveyor.getMobileNumber().length() != 10) {
+            throw new NotFoundException("Invalid Mobile Number");
         } else {
 
             ServeyorSignUpDTO signUpDTO = ServeyorSignUpDTO.builder()
                     .username(serveyor.getUsername())
-                    .gender("" + serveyor.getGender())
+                    .gender("" + serveyor.getGender().toLowerCase().trim())
                     .designation(serveyor.getDesignation())
                     .dateOfBirth(serveyor.getDateOfBirth())
                     .emailId(serveyor.getEmailId())
@@ -272,9 +284,9 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
 
     }
 
-    public boolean verifyMobileNumber(long mobileNumber, boolean status) {
-        if (String.valueOf(mobileNumber).length() != 10) {
-            throw new CustomException("Please Enter Valid Mobile Number");
+    public boolean verifyMobileNumber(String mobileNumber, boolean status) throws NotFoundException {
+        if (mobileNumber.length() != 10) {
+            throw new NotFoundException("Invalid Mobile Number");
         } else {
             status = true;
             return status;
@@ -282,26 +294,30 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
 
-    public boolean verifyServeyor(long mobileNumber, boolean status) {
+//    public boolean verifyServeyor(String mobileNumber, boolean status) throws NotFoundException {
+//
+//        Serveyor serveyor = serveyorRepository.findByMobileNumber(mobileNumber);
+//
+//        if (serveyor == null) {
+//            throw new NotFoundException("The Serveyor is not Registered Or Not yet Verified");
+//        } else if (!serveyor.isActive() || serveyor.isDeleted()) {
+//            throw new NotFoundException("Serveyor is InActive or Deleted, Please Contact Support Team");
+//        } else {
+//            status = true;
+//        }
+//        return status;
+//    }
 
-        Serveyor serveyor = serveyorRepository.findByMobileNumber(mobileNumber);
 
-        if (serveyor == null || !serveyor.isVerified()) {
-            throw new NoSuchElementException();
-        } else if (!serveyor.isActive() || serveyor.isDeleted()) {
-            throw new CustomException("Serveyor is InActive or Deleted, Please Support Team");
-        } else {
-            status = true;
-        }
-        return status;
-    }
+
+
 
     @Override
-    public ServeyorOtp sendOtp(Otp otp, boolean status) {
+    public ServeyorOtp sendOtp(Otp otp, boolean status) throws NotFoundException {
         status = false;
         ServeyorOtp serveyorOtp = new ServeyorOtp();
         Random random = new Random();
-        if (verifyMobileNumber(otp.getMobileNumber(), status) && verifyServeyor(otp.getMobileNumber(), status)) {
+        if (verifyMobileNumber(otp.getMobileNumber(), status) ) {
             final long ONE_MINUTE_IN_MILLIS = 60000;
 
             Calendar date = Calendar.getInstance();
@@ -322,181 +338,122 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                     .mobileNumber(otp.getMobileNumber())
                     .expiryTime(afterAddingTenMins)
                     .build();
+            log.error("Expiry Time : " + afterAddingTenMins);
 
-
+        } else {
+            throw new NotFoundException("Oops Not Data Found");
         }
         return serveyorOtp;
 
     }
 
     @Override
-    public ServeyorOtp verifyOtp(Otp otp) {
+    public ServeyorSignUpDTO verifyOtp(Otp otp) throws NotFoundException {
 
-        final long ONE_MINUTE_IN_MILLIS = 60000;
-        Calendar date = Calendar.getInstance();
-        long t = date.getTimeInMillis();
-        Date afterAddingTenMins = new Date(t + (5 * ONE_MINUTE_IN_MILLIS));
+        ServeyorSignUpDTO verifyResponse = new ServeyorSignUpDTO();
 
-        List<Otp> otpCheck = otpRepository.findByMobileNumber(otp.getMobileNumber());
-        ServeyorOtp serveyorOtp = new ServeyorOtp();
-        for (Otp otpValidate : otpCheck) {
-            if (otpCheck == null) {
+        if (otp.getOtp().length() == 6 && otp.getMobileNumber().length() == 10) {
+            List<Otp> otpCheck = otpRepository.findByMobileNumberAndOtp(otp.getMobileNumber(), otp.getOtp());
+            Serveyor response = serveyorRepository.findByMobileNumber(otp.getMobileNumber());
 
-                throw new MissingFormatArgumentException("Required Request Body is Missing");
 
-            } else if (afterAddingTenMins.after(otpValidate.getExpiryTime())) {
-                throw new NoSuchElementException("Otp Expired, Please Try Again");
-            } else if (otpValidate.getOtp().equals(otp.getOtp())) {
-                otp = Otp.builder()
-                        .message("Mobile Number Verified SuccessFully")
-                        .build();
+            if (otpCheck.size() > 0) {
+                log.error(otp.getOtp());
 
-                serveyorOtp = ServeyorOtp.builder()
-                        .message("Mobile Number Verified SuccessFully")
-                        .build();
+                for (Otp otpValidate : otpCheck) {
+                    if (new Date().after(otpValidate.getExpiryTime())) {
+                        throw new NotFoundException("OTP Expired, Please Try Again");
+                    } else if (otpValidate.getOtp().equals(otp.getOtp())) {
+                        otp = Otp.builder()
+                                .message("Mobile Number Verified SuccessFully")
+                                .build();
 
-                otpRepository.save(otp);
+                        verifyResponse = ServeyorSignUpDTO.builder()
+                                .username(response.getUsername())
+                                .dateOfBirth(response.getDateOfBirth())
+                                .emailId(response.getEmailId())
+                                .mobileNumber(response.getMobileNumber())
+                                .govtDepart(response.getGovtDepart())
+                                .govtId(response.getGovtId())
+                                .gender(response.getGender())
+                                .designation(response.getDesignation())
+                                .build();
+
+                        otpRepository.save(otp);
+
+                    }
+
+
+                }
+                return verifyResponse;
+
+            } else {
+                throw new NotFoundException("Invalid OTP");
             }
-
-
+        } else {
+            throw new NotFoundException("Invalid OTP");
         }
 
-        return serveyorOtp;
     }
 
     @Override
-    public List<FamilyListDTO> unVerifyDetails(String id, String idNo) {
+    public List<FamilyListDTO> unVerifyDetails(String idNo) throws NotFoundException {
         List<FamilyListDTO> familyListDTOS = new ArrayList<>();
         List<Users> usersList = new ArrayList<>();
         FamilyListDTO voterIdList = new FamilyListDTO();
-        if (id.equals("voterId")) {
-
-            usersList = usersRepository.findByVoterId(idNo);
 
 
-            if (usersList != null) {
-                for (Users checkByVoterId : usersList) {
+        usersList = usersRepository.findByVoterId(idNo);
 
-                    List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByVoterId.getFamilyId());
+        if (usersList.size() > 0) {
+            for (Users checkByVoterId : usersList) {
 
-                    for (Users familyList : usersFamilyIdList) {
+                List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByVoterId.getFamilyId());
 
-                        voterIdList = FamilyListDTO.builder()
-                                .name(familyList.getFullName())
-                                .aadharNo(familyList.getVoterId())
-                                .familyId(checkByVoterId.getFamilyId())
-                                .build();
+                for (Users familyList : usersFamilyIdList) {
 
-                    }
-                    familyListDTOS.add(voterIdList);
+                    voterIdList = FamilyListDTO.builder()
+                            .name(familyList.getFullName())
+                            .idNo(familyList.getVoterId())
+                            .familyId(checkByVoterId.getFamilyId())
+                            .build();
+
                 }
-
-                return familyListDTOS;
-            } else {
-                throw new NoSuchElementException();
+                familyListDTOS.add(voterIdList);
             }
-
-
-        } else if (id.equals("bhulekh")) {
-            usersList = usersRepository.findByBhulekhId(idNo);
-
-            if (usersList != null) {
-
-                for (Users checkByBhulekhId : usersList) {
-                    List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByBhulekhId.getFamilyId());
-
-                    for (Users familyList : usersFamilyIdList) {
-
-                        voterIdList = FamilyListDTO.builder()
-                                .name(familyList.getFullName())
-                                .aadharNo(familyList.getVoterId())
-                                .familyId(familyList.getFamilyId())
-                                .build();
-
-                    }
-                    familyListDTOS.add(voterIdList);
-                }
-                return familyListDTOS;
-            } else {
-                throw new NoSuchElementException();
-            }
-        } else if (id.equals("manreka")) {
-            usersList = usersRepository.findByManrekaRegNo(idNo);
-
-            if (usersList != null) {
-                for (Users checkByManrekaId : usersList) {
-                    List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByManrekaId.getFamilyId());
-                    for (Users familyList : usersFamilyIdList) {
-
-                        voterIdList = FamilyListDTO.builder()
-                                .name(familyList.getFullName())
-                                .aadharNo(familyList.getVoterId())
-                                .familyId(familyList.getFamilyId())
-                                .build();
-
-                    }
-                    familyListDTOS.add(voterIdList);
-                }
-                return familyListDTOS;
-            } else {
-                throw new NoSuchElementException();
-            }
-        } else if (id.equals("rationId")) {
-            usersList = usersRepository.findByRationCardNumber(idNo);
-
-            if (usersList != null) {
-                for (Users checkByRationId : usersList) {
-                    List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByRationId.getFamilyId());
-                    for (Users familyList : usersFamilyIdList) {
-                        voterIdList = FamilyListDTO.builder()
-                                .name(familyList.getFullName())
-                                .aadharNo(familyList.getVoterId())
-                                .familyId(familyList.getFamilyId())
-                                .build();
-
-
-                    }
-                    familyListDTOS.add(voterIdList);
-                }
-                return familyListDTOS;
-            } else {
-                throw new NoSuchElementException();
-            }
-
+        } else {
+            throw new NotFoundException("Ops Not Found");
         }
-
-        return null;
+        return familyListDTOS;
 
     }
 
     @Override
-    public Users getFamilyList(String voterId) {
+    public IndividualListDTO getFamilyList(String idNo) throws NotFoundException {
 
-        Users usersFamilyList = usersRepository.findUserByUsername(voterId);
-
-
-        Users getUsersList = Users.builder()
-                .familyId(usersFamilyList.getFamilyId())
-                .fullName(usersFamilyList.getFullName())
-                .address(usersFamilyList.getAddress())
-                .dateOfBirth(usersFamilyList.getDateOfBirth())
-                .voterId(usersFamilyList.getVoterId())
-                .aadharNo(usersFamilyList.getAadharNo())
-                .panCardNo(usersFamilyList.getPanCardNo())
-                .mobileNumber(usersFamilyList.getMobileNumber())
-                .employed(usersFamilyList.getEmployed())
-                .income(usersFamilyList.getIncome())
-                .vmulyankana(usersFamilyList.getVmulyankana())
-                .isManrekaEnabled(usersFamilyList.isManrekaEnabled())
-                .isPMKisaanEnabled(usersFamilyList.isPMKisaanEnabled())
-                .epf_nps(usersFamilyList.getEpf_nps())
-                .mobileNumber(usersFamilyList.getMobileNumber())
-                .gramPanchayat(usersFamilyList.getGramPanchayat())
-                .build();
-
-
-        return getUsersList;
-
+        Users usersFamilyList = usersRepository.findUserByVoterId(idNo);
+        if (usersFamilyList != null) {
+            IndividualListDTO getUsersList = IndividualListDTO.builder()
+                    .familyId(usersFamilyList.getFamilyId())
+                    .fullName(usersFamilyList.getFullName())
+                    .address(usersFamilyList.getAddress())
+                    .dateOfBirth(usersFamilyList.getDateOfBirth())
+                    .voterId(usersFamilyList.getVoterId())
+                    .aadharNo(usersFamilyList.getAadharNo())
+                    .panCardNo(usersFamilyList.getPanCardNo())
+                    .mobileNumber(usersFamilyList.getMobileNumber())
+                    .employed(usersFamilyList.getEmployed())
+                    .epf_nps(usersFamilyList.getEpf_nps())
+                    .gramPanchayat(usersFamilyList.getGramPanchayat())
+                    .income(usersFamilyList.getIncome())
+                    .vmulyankana(usersFamilyList.getVmulyankana())
+                    .isManrekaEnabled(usersFamilyList.isManrekaEnabled())
+                    .isPMKisaanEnabled(usersFamilyList.isPMKisaanEnabled())
+                    .build();
+            return getUsersList;
+        } else {
+            throw new NotFoundException("Oops Not Data Found");
+        }
     }
 
     private Set<SimpleGrantedAuthority> getAuthority(Users user) {

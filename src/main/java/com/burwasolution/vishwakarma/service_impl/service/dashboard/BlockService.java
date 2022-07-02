@@ -12,7 +12,7 @@ public interface BlockService {
 
     List<Blocks> findAll();
 
-    List<LocationLists> findByTehsilCode(String id);
+    List<LocationLists> findByTehsilCode(String blockId);
 
     BlockCountDTO getCountsInBlock(String blockId);
 }

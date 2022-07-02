@@ -9,11 +9,7 @@ import java.util.List;
 public interface CategoryService {
 
     List<Category> saveData(List<Category> category);
-
     List<Category> findAll();
-
-    List<LocationLists> findByVillageCode(String id);
-
-
+    List<LocationLists> findByVillageCode(String villageId);
     CategoryCountsDTO getCountsInCategory(String categoryId);
 }

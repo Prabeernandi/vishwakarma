@@ -18,10 +18,10 @@ import java.util.List;
 public class Serveyor extends BaseObject {
 
     private String username;
-    private gender gender;
+    private String gender;
     private Date dateOfBirth;
     private String emailId;
-    private long mobileNumber;
+    private String mobileNumber;
     private String govtDepart;
     private String govtId;
     private String designation;

@@ -1,6 +1,9 @@
 package com.burwasolution.vishwakarma.domains.entity.basic;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -9,12 +12,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 @Document(collection = "otp")
 public class Otp extends BaseObject{
 
     private String otp;
     private Date expiryTime;
-    private long mobileNumber;
+    private String mobileNumber;
     private String message;
 }
