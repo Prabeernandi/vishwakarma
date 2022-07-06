@@ -1,15 +1,21 @@
 package com.burwasolution.vishwakarma.service_impl.impl.groupData;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.*;
+import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
+import com.burwasolution.vishwakarma.domains.dto.response.location.FilterCounts;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
+import com.burwasolution.vishwakarma.domains.entity.headerFilter.CardDataFilter;
 import com.burwasolution.vishwakarma.reprository.groupData.GroupDataRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.GroupDataService;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -66,6 +72,7 @@ public class GroupDataServiceImpl implements GroupDataService {
 
 
     }
+
 
     @Override
     public List<FamilyListDTO> findFamilyList(Users users) {
@@ -605,6 +612,164 @@ public class GroupDataServiceImpl implements GroupDataService {
 
 
         return null;
+    }
+
+    @Override
+    public FilterCounts findByLocationFilter(FilterCounts filterCounts) throws NotFoundException {
+        Users getLocation = new Users();
+        if (filterCounts != null) {
+
+            if (filterCounts.getStateCode() != null) {
+                getLocation = usersRepository.findByStateCode(filterCounts.getStateCode());
+
+            }
+
+        } else {
+            throw new NotFoundException("Opps No Data Found");
+        }
+
+        return null;
+    }
+
+    public Long getFamilyCounts(List<Users> users) {
+
+        LinkedHashSet<String> counts = new LinkedHashSet<>();
+        for (Users familyId : users) {
+            counts.add(familyId.getFamilyId());
+        }
+        long size = counts.size();
+
+        return size;
+    }
+
+    public Long getEmployedCounts(List<Users> users) {
+
+        long size = 0;
+        ArrayList<String> list = new ArrayList<>();
+        for (Users getEmployed : users) {
+            if (getEmployed.getEmployedCode() != null) {
+                list.add(getEmployed.getEmployedCode());
+            }
+
+            size = list.size();
+        }
+
+        return size;
+    }
+
+    public Long getSchemeCounts(List<Users> users) {
+        long size = 0;
+        ArrayList<String> list = new ArrayList<>();
+        for (Users getSchemes : users) {
+            if (getSchemes.getGovtSchemeEnrolled() != null) {
+                list.add(getSchemes.getGovtSchemeEnrolled());
+            }
+        }
+        size = list.size();
+
+        return size;
+    }
+
+
+    @Override
+    @Deprecated
+    public CardDataFilter findByCardDataFilter(CardDataFilterDTO cardDataFilter) {
+
+        String stateCode = null, districtCode = null, tehsilCode = null, blockCode = null, villageCode = null, category = null, ageBar = null, gender = null, employedCode = null, schemeCode = null;
+
+        List<Users> usersList = new ArrayList<>();
+
+        stateCode = cardDataFilter.getStateCode();
+        districtCode = cardDataFilter.getDistrictCode();
+        tehsilCode = cardDataFilter.getTehsilCode();
+        blockCode = cardDataFilter.getBlockCode();
+        villageCode = cardDataFilter.getVillageCode();
+        category = cardDataFilter.getCategoryCode();
+        ageBar = cardDataFilter.getAgeBar();
+        gender = cardDataFilter.getGender();
+        employedCode = cardDataFilter.getEmployedCode();
+        schemeCode = cardDataFilter.getSchemeCode();
+        CardDataFilter cardDataFilter2 = new CardDataFilter();
+        if (stateCode != null) {
+
+            if (villageCode != null) {
+
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
+                    log.error("size " + usersList.size());
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByVillageCode(villageCode);
+                }
+
+            } else if (blockCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByBlockCode(blockCode);
+                }
+            } else if (tehsilCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBar(tehsilCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGender(tehsilCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(tehsilCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByTehsilCode(tehsilCode);
+                }
+
+            } else if (districtCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBar(districtCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGender(districtCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(districtCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByDistrictCode(districtCode);
+                }
+            } else {
+                usersList = usersRepository.findAllByStateCode(stateCode);
+            }
+
+
+            cardDataFilter2 = CardDataFilter.builder()
+                    .stateCode(cardDataFilter.getStateCode())
+                    .districtCode(cardDataFilter.getDistrictCode())
+                    .tehsilCode(cardDataFilter.getTehsilCode())
+                    .blockCode(cardDataFilter.getBlockCode())
+                    .villageCode(cardDataFilter.getVillageCode())
+                    .categoryCode(cardDataFilter.getCategoryCode())
+                    .families(getFamilyCounts(usersList).longValue())
+                    .employed(getEmployedCounts(usersList).longValue())
+                    .gender(cardDataFilter.getGender())
+                    .employedCode(cardDataFilter.getEmployedCode())
+                    .govtSchemesEnrolled(getSchemeCounts(usersList).longValue())
+                    .vMulScore(177889)
+                    .ageBar(cardDataFilter.getAgeBar())
+                    .build();
+
+        } else {
+            throw new HttpMessageNotReadableException(cardDataFilter.getStateCode());
+        }
+
+        return cardDataFilter2;
     }
 
 

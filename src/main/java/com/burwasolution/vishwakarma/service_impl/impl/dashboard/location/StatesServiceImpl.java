@@ -30,34 +30,7 @@ public class StatesServiceImpl implements StateService {
         this.usersRepository = usersRepository;
     }
 
-    @Override
-    public List<StatesDTO> getCountsInState(String stateId) {
 
-        List<StatesDTO> stateDetails = new ArrayList<>();
-        ArrayList<String> list = new ArrayList<>();
-        ArrayList<String> familyList = new ArrayList<>();
-        ArrayList<String> employedList = new ArrayList<>();
-        List<Users> getStateCode = usersRepository.findByStateCode(stateId);
-        for (Users user : getStateCode) {
-            if (!list.contains(user.getDistrictCode())) {
-                list.add(user.getDistrictCode());
-
-            }
-            if (!familyList.contains(user.getFamilyId())) {
-                familyList.add(user.getFamilyId());
-            }
-
-        }
-        StatesDTO stateDetailsList = StatesDTO.builder()
-                .name("Haridwar")
-                .stateCode("" + list.toString().replaceAll("(^\\[|\\]$)", ""))
-                .families(familyList.size())
-                .build();
-        stateDetails.add(stateDetailsList);
-
-        return stateDetails;
-
-    }
 
     @Override
     public List<States> saveData(List<States> states) {

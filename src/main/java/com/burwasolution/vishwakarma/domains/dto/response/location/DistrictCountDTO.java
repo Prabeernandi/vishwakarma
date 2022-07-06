@@ -22,6 +22,6 @@ public class DistrictCountDTO {
     private long govtSchemesEnrolled;
     private long vmulyankana;
     private String districtCode;
-    private List<Counts> countsList = new ArrayList<>();
+    private List<FilterCounts> filterCountsList = new ArrayList<>();
 
 }

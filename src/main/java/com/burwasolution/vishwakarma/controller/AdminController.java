@@ -4,7 +4,7 @@ import com.burwasolution.vishwakarma.domains.dto.users.LoginUser;
 import com.burwasolution.vishwakarma.domains.entity.basic.Otp;
 import com.burwasolution.vishwakarma.domains.entity.basic.Serveyor;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
-import com.burwasolution.vishwakarma.service_impl.service.UserService;
+import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,7 +75,7 @@ public class AdminController {
     }
 
     @GetMapping("/getFamilyMemberDetails")
-    private ResponseEntity<?> l(@RequestParam String idNo) throws NotFoundException {
+    private ResponseEntity<?> getFamilyList(@RequestParam String idNo) throws NotFoundException {
         Map<String, Object> getFamilyList = new HashMap<>();
         getFamilyList.put("status", HttpStatus.OK);
         getFamilyList.put("result", userService.getFamilyList(idNo));

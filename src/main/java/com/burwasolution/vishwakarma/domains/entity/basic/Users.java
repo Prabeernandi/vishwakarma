@@ -1,6 +1,7 @@
 package com.burwasolution.vishwakarma.domains.entity.basic;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -50,9 +51,6 @@ public class Users extends BaseObject {
     private String employed;
     private long income;
     private long vmulyankana;
-    private long percentage;
-    private String areaInHectare;
-    private String farmerKhasraCount;
     private String voterId;
     private String houseNumber;
     private String caste;
@@ -60,22 +58,29 @@ public class Users extends BaseObject {
     private String authToken;
     private String panCardNo;
     private String epf_nps;
+    private String employedCode;
+    private String schemeCode;
+    @JsonProperty
     private boolean isVerified = true;
     private String gramPanchayat;
-    private String nameOfCraft;
+    @JsonProperty
     private boolean hasRashanCard;
     private String rationCardNumber;
     private String status;
     private String areaType;
     private int numberOfFamilyCounts;
     private String memberId;
+    private String govtSchemeEnrolled;
     private String uidNo;
     private String relationWithHof;
     private String registrationNo;
     private String address;
+    @JsonProperty
     private boolean isManrekaEnabled;
     private String manrekaRegNo;
+    @JsonProperty
     private boolean isPMKisaanEnabled;
+    @JsonProperty
     private boolean hasPradhanMantriAwaasYojna;
     private String pmAwaasRegNo;
     private String nregaJobCardNo;

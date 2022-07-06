@@ -51,7 +51,7 @@ public class VillageServiceImpl implements VillageService {
             LocationLists locationLists = LocationLists.builder()
                     .name(village.getName())
                     .displayName(village.getDisplayName())
-                    .code(village.getBlockCode())
+                    .code(village.getVillageCode())
                     .build();
             locationArray.add(locationLists);
         }

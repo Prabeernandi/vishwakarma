@@ -15,4 +15,5 @@ public class HeaderFilter {
 
     private List age;
     private List gender;
+    private List employed;
 }

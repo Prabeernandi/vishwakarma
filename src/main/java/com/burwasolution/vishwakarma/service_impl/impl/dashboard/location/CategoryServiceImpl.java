@@ -34,8 +34,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public List<LocationLists> findAll() {
+        List<Category> category = categoryRepository.findAll();
+        List<LocationLists> locationLists = new ArrayList<>();
+        for (Category list : category) {
+            LocationLists locations = LocationLists.builder()
+                    .name(list.getName())
+                    .code(list.getCategoryCode())
+                    .displayName(list.getDisplayName())
+                    .build();
+            locationLists.add(locations);
+        }
+
+        return locationLists;
     }
 
     @Override

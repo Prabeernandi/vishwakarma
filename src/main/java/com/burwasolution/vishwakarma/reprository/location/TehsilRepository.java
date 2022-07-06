@@ -10,7 +10,7 @@ import java.util.List;
 public interface TehsilRepository extends MongoRepository<Tehsil, String> {
 
 
-    List<Tehsil> findByDistrictCode(String id);
+    List<Tehsil> findByDistrictCode(String districtId);
 
     Tehsil findByTehsilCode(String tehsilId);
 }

@@ -8,8 +8,5 @@ import java.util.List;
 
 public interface StateService {
     List<States> saveData(List<States> states);
-
     List<LocationLists> findAll();
-
-    List<StatesDTO> getCountsInState(String stateId);
 }

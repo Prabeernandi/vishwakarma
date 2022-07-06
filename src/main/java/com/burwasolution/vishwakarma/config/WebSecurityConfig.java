@@ -64,6 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/dashboard/getHeaderGenderFilter", "/dashboard/saveBlockData").permitAll()
                 .antMatchers("/dashboard/getStateList", "/dashboard/getDistrictList", "/dashboard/getTehsilList",
                         "/dashboard/getBlockList", "/dashboard/getVillageList", "/dashboard/getCategoryList").permitAll()
+                .antMatchers("/dashboard/getHeaderEmployedFilter", "/dashboard/getHeaderGovtSchemesFilter").permitAll()
+                .antMatchers("/dashboard/getCardDataFilter").permitAll()
                 .antMatchers("/dashboard/saveStateDetails", "/dashboard/saveDistrictData", "/dashboard/saveTehsilData",
                         "/dashboard/saveBlockData", "/dashboard/saveVillageData", "/dashboard/saveCategoryData").permitAll()
                 .antMatchers("/dashboard/getDistrictDataFilter", "/dashboard/getTehsilDataFilter", "/dashboard/getBlockDataFilter",
@@ -72,6 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/groupData/getSpecificEmployedTypeList", "/groupData/getGovtSchemesEnroleldList", "/groupData/getSpecificSchemesList",
                         "/groupData/getMulyankaList", "/groupData/getEmployedTypeList").permitAll()
                 .antMatchers("/admin/insertBulkUsers", "/dashboard/getStateDataFilter").permitAll()
+                .antMatchers("/serveyor/getEmployedType", "/serveyor/getGovtSchemes", "/serveyor/addFamilyMember").permitAll()
+                .antMatchers("/serveyor/editFamilyMember").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)

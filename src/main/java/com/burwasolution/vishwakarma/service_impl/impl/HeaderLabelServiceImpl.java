@@ -2,8 +2,12 @@ package com.burwasolution.vishwakarma.service_impl.impl;
 
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
+import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
+import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
 import com.burwasolution.vishwakarma.reprository.generalDetails.HeaderLabelDetailsRepository;
+import com.burwasolution.vishwakarma.reprository.users.EmployedRepository;
+import com.burwasolution.vishwakarma.reprository.users.GovtSchemesRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
 import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +25,16 @@ public class HeaderLabelServiceImpl implements HeaderLabelService {
 
     private final HeaderLabelDetailsRepository labelDetailsRepository;
     private final UsersRepository usersRepository;
+    private final EmployedRepository employedRepository;
+    private final GovtSchemesRepository govtSchemesRepository;
 
     @Autowired
-    public HeaderLabelServiceImpl(HeaderLabelDetailsRepository labelDetailsRepository, UsersRepository usersRepository) {
+    public HeaderLabelServiceImpl(HeaderLabelDetailsRepository labelDetailsRepository, UsersRepository usersRepository,
+                                  EmployedRepository employedRepository, GovtSchemesRepository govtSchemesRepository) {
         this.labelDetailsRepository = labelDetailsRepository;
         this.usersRepository = usersRepository;
+        this.employedRepository = employedRepository;
+        this.govtSchemesRepository = govtSchemesRepository;
     }
 
     @Override
@@ -85,5 +94,15 @@ public class HeaderLabelServiceImpl implements HeaderLabelService {
 
 
         return list;
+    }
+
+    @Override
+    public List<Employed> getHeaderEmployed() {
+        return employedRepository.findAll();
+    }
+
+    @Override
+    public List<GovtSchemes> getHeaderGovtSchemesFilter() {
+        return govtSchemesRepository.findAll();
     }
 }

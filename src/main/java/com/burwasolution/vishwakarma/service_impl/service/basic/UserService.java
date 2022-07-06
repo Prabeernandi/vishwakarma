@@ -1,4 +1,4 @@
-package com.burwasolution.vishwakarma.service_impl.service;
+package com.burwasolution.vishwakarma.service_impl.service.basic;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;

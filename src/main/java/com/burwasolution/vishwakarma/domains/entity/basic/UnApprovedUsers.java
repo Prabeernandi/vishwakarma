@@ -1,19 +1,20 @@
-package com.burwasolution.vishwakarma.domains.dto.response.groupData;
+package com.burwasolution.vishwakarma.domains.entity.basic;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class IndividualListDTO {
-
+@Builder
+@Document(collection = "unApprovedUsers")
+public class UnApprovedUsers extends BaseObject {
 
     private String familyId;
     private String fullName;
@@ -32,5 +33,11 @@ public class IndividualListDTO {
     private String gramPanchayat;
     private long income;
     private long vmulyankana;
+    @JsonProperty
+    private boolean isManrekaEnabled;
+    @JsonProperty
+    private boolean isPMKisaanEnabled;
+    private boolean isApproved = false;
+    private String status;
 
 }

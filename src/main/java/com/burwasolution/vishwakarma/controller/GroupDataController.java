@@ -20,6 +20,7 @@ public class GroupDataController {
         this.groupDataService = groupDataService;
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/getFamilyList")
     private List<FamilyListDTO> getFamilyList(@RequestBody Users users) {
 

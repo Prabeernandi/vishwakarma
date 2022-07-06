@@ -1,12 +1,17 @@
 package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
+import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
+import com.burwasolution.vishwakarma.domains.entity.headerFilter.CardDataFilter;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
 import com.burwasolution.vishwakarma.domains.dto.response.location.*;
-import com.burwasolution.vishwakarma.domains.entity.location.Blocks;
+import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
+import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.service_impl.service.dashboard.*;
 import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
+import com.burwasolution.vishwakarma.service_impl.service.groupData.GroupDataService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +34,14 @@ public class DashboardController {
     private final VillageService villageService;
     private final HeaderLabelService headerService;
     private final CategoryService categoryService;
+    private final GroupDataService groupDataService;
 
     @Autowired
     public DashboardController(StateService stateService, DistrictService districtService
             , BlockService blockService, TehsilService tehsilService
             , VillageService villageService, CategoryService categoryService,
-                               HeaderLabelService headerService, StateRepository stateRepository
+                               HeaderLabelService headerService, StateRepository stateRepository,
+                               GroupDataService groupDataService
     ) {
         this.stateService = stateService;
         this.districtService = districtService;
@@ -44,6 +51,7 @@ public class DashboardController {
         this.headerService = headerService;
         this.categoryService = categoryService;
         this.stateRepository = stateRepository;
+        this.groupDataService = groupDataService;
     }
 
     // dashboard Side bar API
@@ -76,7 +84,7 @@ public class DashboardController {
         Map<String, Object> getTehsilList = new HashMap<>();
         getTehsilList.put("status", HttpStatus.OK);
         getTehsilList.put("result", tehsilService.findByDistrictCode(districtId));
-        getTehsilList.put("message", "District List");
+        getTehsilList.put("message", "Tehsil List");
 
         return new ResponseEntity<>(getTehsilList, HttpStatus.OK);
     }
@@ -86,7 +94,7 @@ public class DashboardController {
         Map<String, Object> getBlockList = new HashMap<>();
         getBlockList.put("status", HttpStatus.OK);
         getBlockList.put("result", blockService.findByTehsilCode(tehsilId));
-        getBlockList.put("message", "District List");
+        getBlockList.put("message", "Block List");
 
         return new ResponseEntity<>(getBlockList, HttpStatus.OK);
     }
@@ -97,7 +105,7 @@ public class DashboardController {
         Map<String, Object> getVillageList = new HashMap<>();
         getVillageList.put("status", HttpStatus.OK);
         getVillageList.put("result", villageService.findByBlockCode(blockId));
-        getVillageList.put("message", "District List");
+        getVillageList.put("message", "Village List");
 
         return new ResponseEntity<>(getVillageList, HttpStatus.OK);
     }
@@ -107,13 +115,13 @@ public class DashboardController {
 
         Map<String, Object> getCategoryList = new HashMap<>();
         getCategoryList.put("status", HttpStatus.OK);
-        getCategoryList.put("result", categoryService.findByVillageCode(villageId));
-        getCategoryList.put("message", "District List");
+        getCategoryList.put("result", categoryService.findAll());
+        getCategoryList.put("message", "Category List");
 
         return new ResponseEntity<>(getCategoryList, HttpStatus.OK);
     }
 
-//    @PostMapping("/saveStateData")
+    //    @PostMapping("/saveStateData")
 //    private List<States> saveStateData(@RequestBody List<States> states) {
 //        return stateService.saveData(states);
 //    }
@@ -128,10 +136,10 @@ public class DashboardController {
 //        return tehsilService.saveData(tehsil);
 //    }
 //
-    @PostMapping("/saveBlockData")
-    private List<Blocks> saveBlockData(@RequestBody List<Blocks> blocks) {
-        return blockService.saveData(blocks);
-    }
+//    @PostMapping("/saveBlockData")
+//    private List<Blocks> saveBlockData(@RequestBody List<Blocks> blocks) {
+//        return blockService.saveData(blocks);
+//    }
 //
 //    @PostMapping("/saveVillageData")
 //    private List<Village> saveVillageData(@RequestBody List<Village> village) {
@@ -158,36 +166,43 @@ public class DashboardController {
         return headerService.getGenderFilter();
     }
 
-
-    @GetMapping("/getStateDataFilter")
-    private List<StatesDTO> getCountsInState(@RequestParam String stateId) {
-        return stateService.getCountsInState(stateId);
+    @GetMapping("/getHeaderEmployedFilter")
+    private List<Employed> getHeaderEmployed(){
+        return headerService.getHeaderEmployed();
     }
+
+    @GetMapping("/getHeaderGovtSchemesFilter")
+    private List<GovtSchemes> getHeaderGovtSchemesFilter(){
+        return headerService.getHeaderGovtSchemesFilter();
+    }
+
 
 //    @GetMapping("/getDistrictDataFilter")
 //    private List<DistrictCountDTO> getCountsInDistrict(@RequestParam String districtId) {
 //        return districtService.getCountsInDistrict(districtId);
 //    }
 
-    @GetMapping("/getTehsilDataFilter")
-    private TehsilCountDTO getCountsInTehsil(@RequestParam String tehsilId) {
-        return tehsilService.getCountsInTehsil(tehsilId);
+
+    @PostMapping("/getCardDataFilter")
+    private ResponseEntity<?> getCardDataFilter(@RequestBody CardDataFilterDTO CardDataFilter){
+        Map<String, Object> getCardDataFilter = new HashMap<>();
+        getCardDataFilter.put("status", HttpStatus.OK);
+        getCardDataFilter.put("result", groupDataService.findByCardDataFilter(CardDataFilter));
+        getCardDataFilter.put("message", "Card Data Filter List");
+        return new ResponseEntity<>(getCardDataFilter, HttpStatus.OK);
+
     }
 
-    @GetMapping("/getBlockDataFilter")
-    private BlockCountDTO getCountsInBlock(@RequestParam String blockId) {
-        return blockService.getCountsInBlock(blockId);
+
+    @PostMapping("/getLocationDataFilter")
+    private ResponseEntity<?> getLocationDataFilter(@RequestBody FilterCounts filterCounts) throws NotFoundException {
+        Map<String, Object> getLocationDataFilter = new HashMap<>();
+        getLocationDataFilter.put("status", HttpStatus.OK);
+        getLocationDataFilter.put("result", groupDataService.findByLocationFilter(filterCounts));
+        getLocationDataFilter.put("message", "Location Filter List");
+        return new ResponseEntity<>(getLocationDataFilter, HttpStatus.OK);
     }
 
-    @GetMapping("/getVillageDataFilter")
-    private VillageCountDTO getCountsInVillage(@RequestParam String villageId) {
-        return villageService.getCountsInVillage(villageId);
-    }
-
-    @GetMapping("/getcategoryDataFilter")
-    private CategoryCountsDTO getCountsInCategory(@RequestParam String categoryId) {
-        return categoryService.getCountsInCategory(categoryId);
-    }
 
 
 }

@@ -14,9 +14,9 @@ import com.burwasolution.vishwakarma.domains.entity.basic.Users;
 import com.burwasolution.vishwakarma.reprository.users.OtpRepository;
 import com.burwasolution.vishwakarma.reprository.users.ServeyorRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
-import com.burwasolution.vishwakarma.service_impl.service.CountAllService;
-import com.burwasolution.vishwakarma.service_impl.service.RoleService;
-import com.burwasolution.vishwakarma.service_impl.service.UserService;
+import com.burwasolution.vishwakarma.service_impl.service.basic.CountAllService;
+import com.burwasolution.vishwakarma.service_impl.service.basic.RoleService;
+import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,7 +156,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<Users> insertBulkUsers(List<Users> users) {
 
-
+        int count = 1;
         for (Users userlist : users) {
             String newPassword = bCryptPasswordEncoder.encode(userlist.getPassword());
             Users usersData = usersRepository.findUserByUsername(userlist.getUsername());
@@ -178,11 +178,14 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .fatherSpouseName(userlist.getFatherSpouseName())
                         .password(newPassword)
                         .ageBar(ageBar)
+                        .govtSchemeEnrolled(userlist.getGovtSchemeEnrolled())
+                        .employed(userlist.getEmployed())
                         .stateName(userlist.getStateName())
                         .districtName(userlist.getDistrictName())
                         .villageName(userlist.getVillageName())
                         .isManrekaEnabled(userlist.isManrekaEnabled())
                         .familyHead(userlist.getFamilyHead())
+                        .hasPradhanMantriAwaasYojna(userlist.isHasPradhanMantriAwaasYojna())
                         .relationWithHof(userlist.getRelationWithHof())
                         .familyId(userlist.getFamilyId())
                         .houseNumber(userlist.getHouseNumber())
@@ -191,6 +194,8 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .stateCode(userlist.getStateCode())
                         .districtCode(userlist.getDistrictCode())
                         .tehsilName(userlist.getTehsilName())
+                        .employedCode(userlist.getEmployedCode())
+                        .schemeCode(userlist.getSchemeCode())
                         .tehsilCode(userlist.getTehsilCode())
                         .blockCode(userlist.getBlockCode())
                         .aadharNo(userlist.getAadharNo())
@@ -204,9 +209,8 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .voterId(userlist.getVoterId())
                         .build();
                 usersRepository.save(saveUser);
+                log.info("updated " + count++);
             } else if (usersData != null) {
-
-
                 usersData.setUsername(userlist.getUsername());
                 usersData.setFullName(userlist.getFullName());
                 usersData.setFatherSpouseName(userlist.getFatherSpouseName());
@@ -217,10 +221,15 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                 usersData.setVillageName(userlist.getVillageName());
                 usersData.setManrekaEnabled(userlist.isManrekaEnabled());
                 usersData.setManrekaRegNo(userlist.getManrekaRegNo());
-                usersData.setPMKisaanEnabled(false);
+                usersData.setPMKisaanEnabled(userlist.isPMKisaanEnabled());
+                usersData.setEmployed(userlist.getEmployed());
+                usersData.setHasPradhanMantriAwaasYojna(userlist.isHasPradhanMantriAwaasYojna());
+                usersData.setGovtSchemeEnrolled(userlist.getGovtSchemeEnrolled());
                 usersData.setFamilyHead(userlist.getFamilyHead());
                 usersData.setRelationWithHof(userlist.getRelationWithHof());
                 usersData.setFamilyId(userlist.getFamilyId());
+                usersData.setEmployedCode(userlist.getEmployedCode());
+                usersData.setSchemeCode(userlist.getSchemeCode());
                 usersData.setHouseNumber(userlist.getHouseNumber());
                 usersData.setDateOfBirth(userlist.getDateOfBirth());
                 usersData.setMobileNumber(userlist.getMobileNumber());
@@ -237,9 +246,8 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                 usersData.setGender(userlist.getGender());
                 usersData.setEmployed(userlist.getEmployed());
                 usersData.setVoterId(userlist.getVoterId());
-
                 usersRepository.save(usersData);
-
+                log.info("updated " + count++);
                 log.info("Updated User : " + usersData.getUsername());
 
 //                throw new ResourceAlreadyExists(userlist.getUsername());
@@ -285,7 +293,11 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
     public boolean verifyMobileNumber(String mobileNumber, boolean status) throws NotFoundException {
-        if (mobileNumber.length() != 10) {
+
+        String regex = "[+-]?\\d*(\\.\\d+)?";
+
+        if (!mobileNumber.matches(regex) || mobileNumber.trim().length() != 10) {
+            status = false;
             throw new NotFoundException("Invalid Mobile Number");
         } else {
             status = true;
@@ -447,8 +459,6 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                     .gramPanchayat(usersFamilyList.getGramPanchayat())
                     .income(usersFamilyList.getIncome())
                     .vmulyankana(usersFamilyList.getVmulyankana())
-                    .isManrekaEnabled(usersFamilyList.isManrekaEnabled())
-                    .isPMKisaanEnabled(usersFamilyList.isPMKisaanEnabled())
                     .build();
             return getUsersList;
         } else {

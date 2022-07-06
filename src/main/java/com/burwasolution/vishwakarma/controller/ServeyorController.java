@@ -28,10 +28,37 @@ public class ServeyorController {
     private ResponseEntity<?> addFamilyMember(@RequestBody IndividualListDTO familyMember, @RequestParam boolean doLink) throws NotFoundException {
         Map<String, Object> addFamilyMember = new HashMap<>();
         addFamilyMember.put("status", HttpStatus.OK);
-        addFamilyMember.put("result", serveyorService.addFamilyMember(familyMember,doLink));
-        addFamilyMember.put("message", "UnVerified Family List");
+        addFamilyMember.put("result", serveyorService.addFamilyMember(familyMember, doLink));
+        addFamilyMember.put("message", "Family Details Submitted For Approval");
         return new ResponseEntity<>(addFamilyMember, HttpStatus.OK);
     }
 
+    @PostMapping("/editFamilyMember")
+    private ResponseEntity<?> editFamilyMember(@RequestBody IndividualListDTO familyMember, @RequestParam String id) throws NotFoundException {
+        Map<String, Object> editFamilyMember = new HashMap<>();
+        editFamilyMember.put("status", HttpStatus.OK);
+        editFamilyMember.put("result", serveyorService.editFamilyMember(familyMember, id));
+        editFamilyMember.put("message", "Family Details SuccessFully Edited");
+        return new ResponseEntity<>(editFamilyMember, HttpStatus.OK);
+    }
+
+    @GetMapping("/getEmployedType")
+    private ResponseEntity<?> getEmployedType() {
+        Map<String, Object> getEmployedType = new HashMap<>();
+        getEmployedType.put("status", HttpStatus.OK);
+        getEmployedType.put("result", serveyorService.getEmployedType());
+        getEmployedType.put("message", "Employment Type List");
+        return new ResponseEntity<>(getEmployedType, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/getGovtSchemes")
+    private ResponseEntity<?> getGovtSchemes() {
+        Map<String, Object> getGovtSchemes = new HashMap<>();
+        getGovtSchemes.put("status", HttpStatus.OK);
+        getGovtSchemes.put("result", serveyorService.getGovtSchemes());
+        getGovtSchemes.put("message", "Govt Schemes List");
+        return new ResponseEntity<>(getGovtSchemes, HttpStatus.OK);
+    }
 
 }
