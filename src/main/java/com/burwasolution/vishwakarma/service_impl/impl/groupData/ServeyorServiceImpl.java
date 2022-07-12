@@ -11,39 +11,85 @@ import com.burwasolution.vishwakarma.reprository.users.UnApprovedUsersRepository
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.ServeyorService;
 import javassist.NotFoundException;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
+@Data
 public class ServeyorServiceImpl implements ServeyorService {
+
 
     private final UsersRepository usersRepository;
     private final UnApprovedUsersRepository unApprovedUsersRepository;
     private final GovtSchemesRepository govtSchemesRepository;
     private final EmployedRepository employedRepository;
+    private final ModelMapper modelMapper;
+    String icon = null, employedName = null, schemeName = null;
 
 
     @Autowired
     public ServeyorServiceImpl(UsersRepository usersRepository, UnApprovedUsersRepository unApprovedUsersRepository
-            , GovtSchemesRepository govtSchemesRepository, EmployedRepository employedRepository) {
+            , GovtSchemesRepository govtSchemesRepository, EmployedRepository employedRepository,
+                               ModelMapper modelMapper) {
         this.usersRepository = usersRepository;
         this.unApprovedUsersRepository = unApprovedUsersRepository;
         this.govtSchemesRepository = govtSchemesRepository;
         this.employedRepository = employedRepository;
+        this.modelMapper = modelMapper;
     }
 
+    public String employed(String employedCode) {
+
+        employedName = null;
+        if (employedCode.contains("fr01")) {
+            employedName = "Farmer";
+        }
+        if (employedCode.contains("dw01")) {
+            employedName += ",Daily Worker";
+        }
+        if (employedCode.contains("ar01")) {
+            employedName += ",Artisan";
+        }
+
+        return employedName;
+    }
+
+    public String govtScheme(String scheme) {
+
+        schemeName = null;
+        if (scheme.contains("RC01")) {
+            schemeName = "RationCard";
+        }
+        if (scheme.contains("RMKY01")) {
+            schemeName += ",DPMKisaanYojana";
+        }
+        if (scheme.contains("PMAY01")) {
+            schemeName += ",PMAwaasYojana";
+        }
+
+        return schemeName;
+    }
+
+
     @Override
-    public UnApprovedUsers addFamilyMember(IndividualListDTO familyMember, boolean doLink) throws NotFoundException {
+    public UnApprovedUsers addFamilyMember(IndividualListDTO familyMember) throws NotFoundException {
         Users findUser = new Users();
         UnApprovedUsers getDetails = new UnApprovedUsers();
+        employed(familyMember.getEmployed());
+        govtScheme(familyMember.getGovtSchemeEnrolled());
 
         if (unApprovedUsersRepository.findByVoterId(familyMember.getVoterId()) == null) {
 
-            if (doLink) {
+            if (familyMember.getDoLink().trim().equals("true")) {
 
                 findUser = usersRepository.findUserByVoterIdAndFamilyId(familyMember.getVoterId(), familyMember.getFamilyId());
 
@@ -61,16 +107,18 @@ public class ServeyorServiceImpl implements ServeyorService {
                             .manrekaRegNo(familyMember.getManrekaRegNo())
                             .bhulekhId(familyMember.getBhulekhId())
                             .mobileNumber(familyMember.getMobileNumber())
-                            .employed(familyMember.getEmployed().trim())
-                            .govtSchemeEnrolled(familyMember.getGovtSchemeEnrolled().trim())
+                            .employedCode(familyMember.getEmployed().trim())
+                            .employed(null)
+                            .employed(employedName.replaceAll("null", ""))
+                            .schemeCode(familyMember.getGovtSchemeEnrolled().trim())
+                            .govtSchemeEnrolled(null)
+                            .govtSchemeEnrolled(schemeName.replaceAll("null", ""))
                             .income(familyMember.getIncome())
                             .vmulyankana(familyMember.getVmulyankana())
                             .epf_nps(familyMember.getEpf_nps())
                             .gramPanchayat(familyMember.getGramPanchayat())
                             .build();
                     unApprovedUsersRepository.save(getDetails);
-
-
                     return getDetails;
 
                 } else {
@@ -78,7 +126,7 @@ public class ServeyorServiceImpl implements ServeyorService {
                 }
 
 
-            } else if (!doLink) {
+            } else if (!familyMember.getDoLink().trim().equals("true")) {
 
                 findUser = usersRepository.findUserByVoterId(familyMember.getVoterId());
                 String familyId = "mv" + familyMember.getVoterId().substring(familyMember.getVoterId().length() - 4);
@@ -96,8 +144,11 @@ public class ServeyorServiceImpl implements ServeyorService {
                             .manrekaRegNo(familyMember.getManrekaRegNo())
                             .bhulekhId(familyMember.getBhulekhId())
                             .mobileNumber(familyMember.getMobileNumber())
-                            .employed(familyMember.getEmployed().trim())
-                            .govtSchemeEnrolled(familyMember.getGovtSchemeEnrolled().trim())
+                            .employed(null)
+                            .employed(employedName.replaceAll("null", ""))
+                            .schemeCode(familyMember.getGovtSchemeEnrolled().trim())
+                            .govtSchemeEnrolled(null)
+                            .govtSchemeEnrolled(schemeName.replaceAll("null", ""))
                             .income(familyMember.getIncome())
                             .vmulyankana(familyMember.getVmulyankana())
                             .epf_nps(familyMember.getEpf_nps())
@@ -125,11 +176,15 @@ public class ServeyorServiceImpl implements ServeyorService {
 
 
     @Override
-    public UnApprovedUsers editFamilyMember(IndividualListDTO familyMember, String id) throws NotFoundException {
+    public IndividualListDTO editFamilyMember(IndividualListDTO familyMember) throws NotFoundException {
 
-        if (id.trim() != null) {
+        if (familyMember.getVoterId().trim() != null) {
 
-            UnApprovedUsers findUser = unApprovedUsersRepository.findById(id).get();
+            Users findUser = usersRepository.findUserByVoterId(familyMember.getVoterId());
+
+            employed(familyMember.getEmployed());
+            govtScheme(familyMember.getGovtSchemeEnrolled());
+
 
             if (findUser != null) {
                 findUser.setAddress(familyMember.getAddress());
@@ -142,14 +197,23 @@ public class ServeyorServiceImpl implements ServeyorService {
                 findUser.setManrekaRegNo(familyMember.getManrekaRegNo());
                 findUser.setBhulekhId(familyMember.getBhulekhId());
                 findUser.setMobileNumber(familyMember.getMobileNumber());
-                findUser.setEmployed(familyMember.getEmployed().trim());
-                findUser.setGovtSchemeEnrolled(familyMember.getGovtSchemeEnrolled().trim());
+                findUser.setEmployedCode(null);
+                findUser.setEmployedCode(familyMember.getEmployed());
+                findUser.setEmployed(employedName.replaceAll("null", ""));
+                findUser.setApproved(false);
+                findUser.setSchemeCode(null);
+                findUser.setSchemeCode(familyMember.getGovtSchemeEnrolled().trim());
+                findUser.setGovtSchemeEnrolled(null);
+                findUser.setGovtSchemeEnrolled(schemeName.replaceAll("null", ""));
                 findUser.setIncome(familyMember.getIncome());
                 findUser.setVmulyankana(familyMember.getVmulyankana());
                 findUser.setEpf_nps(familyMember.getEpf_nps());
                 findUser.setGramPanchayat(familyMember.getGramPanchayat());
-                unApprovedUsersRepository.save(findUser);
-                return findUser;
+                usersRepository.save(findUser);
+
+                IndividualListDTO mapper = modelMapper.map(findUser, IndividualListDTO.class);
+
+                return mapper;
             } else {
                 throw new NotFoundException("User Not Found");
             }
@@ -220,13 +284,11 @@ public class ServeyorServiceImpl implements ServeyorService {
     }
 
 
-
-
     @Override
     public List<GovtSchemes> getGovtSchemes() {
         List<Users> govtSchemesList = usersRepository.findAllByGovtSchemeEnrolled();
-        String schemeCode = null, icon = null;
-
+        String schemeCode = null;
+        final String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString().replaceAll("vishwakarna-0.0.1-SNAPSHOT", "");
         ArrayList<String> list = new ArrayList<>();
         ArrayList<String> getList = new ArrayList<>();
         List<GovtSchemes> finalList = new ArrayList<>();
@@ -252,16 +314,16 @@ public class ServeyorServiceImpl implements ServeyorService {
 
         for (String list5 : list4) {
             if (list5.equals("RationCard")) {
-                icon = " http://10.18.11.143:8080/icon/rationcard.jpg";
+                icon = baseUrl + "/icon/ic_ration_card.png";
                 schemeCode = "RC01";
 
             }
             if (list5.equals("PMKisaanYojana")) {
-                icon = "http://10.18.11.143:8080/icon/pmkishan.jpg";
+                icon = baseUrl + "/icon/ic_pm_kisan.png";
                 schemeCode = "RMKY01";
             }
             if (list5.equals("PMAwaasYojana")) {
-                icon = " http://10.18.11.143:8080/icon/voterCard.png";
+                icon = baseUrl + "/icon/ic_pm_yojana.png";
                 schemeCode = "PMAY01";
             }
 

@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.domains.dto.response.groupData;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class IndividualListDTO {
 
-
+    private String doLink;
     private String familyId;
     private String fullName;
     private String address;
@@ -26,7 +25,9 @@ public class IndividualListDTO {
     private String employed;
     private String rationCardNumber;
     private String manrekaRegNo;
+    private String employedCode;
     private String bhulekhId;
+    private String schemeCode;
     private String govtSchemeEnrolled;
     private String epf_nps;
     private String gramPanchayat;

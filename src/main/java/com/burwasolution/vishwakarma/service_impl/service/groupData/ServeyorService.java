@@ -9,9 +9,9 @@ import javassist.NotFoundException;
 import java.util.List;
 
 public interface ServeyorService {
-    UnApprovedUsers addFamilyMember(IndividualListDTO familyMember, boolean doLink) throws NotFoundException;
+    UnApprovedUsers addFamilyMember(IndividualListDTO familyMember) throws NotFoundException;
 
     List<Employed> getEmployedType();
     List<GovtSchemes> getGovtSchemes();
-    UnApprovedUsers editFamilyMember(IndividualListDTO familyMember, String id) throws NotFoundException;
+    IndividualListDTO editFamilyMember(IndividualListDTO familyMember) throws NotFoundException;
 }

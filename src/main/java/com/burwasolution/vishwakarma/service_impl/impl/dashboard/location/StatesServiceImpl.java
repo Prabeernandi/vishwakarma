@@ -1,8 +1,6 @@
 package com.burwasolution.vishwakarma.service_impl.impl.dashboard.location;
 
 import com.burwasolution.vishwakarma.domains.dto.response.location.LocationLists;
-import com.burwasolution.vishwakarma.domains.dto.response.location.StatesDTO;
-import com.burwasolution.vishwakarma.domains.entity.basic.Users;
 import com.burwasolution.vishwakarma.domains.entity.location.States;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
@@ -29,7 +27,6 @@ public class StatesServiceImpl implements StateService {
         this.modelMapper = modelMapper;
         this.usersRepository = usersRepository;
     }
-
 
 
     @Override

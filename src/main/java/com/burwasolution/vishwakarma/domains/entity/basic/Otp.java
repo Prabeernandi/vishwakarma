@@ -15,8 +15,10 @@ import java.util.Date;
 @Document(collection = "otp")
 public class Otp extends BaseObject{
 
+    private String otpType;
     private String otp;
     private Date expiryTime;
     private String mobileNumber;
     private String message;
+    private String verifyOtp;
 }

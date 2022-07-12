@@ -61,7 +61,7 @@ public class Users extends BaseObject {
     private String employedCode;
     private String schemeCode;
     @JsonProperty
-    private boolean isVerified = true;
+    private boolean isApproved = true;
     private String gramPanchayat;
     @JsonProperty
     private boolean hasRashanCard;

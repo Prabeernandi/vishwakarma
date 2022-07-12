@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/serveyor")
 public class ServeyorController {
@@ -25,19 +25,19 @@ public class ServeyorController {
 
 
     @PostMapping("/addFamilyMember")
-    private ResponseEntity<?> addFamilyMember(@RequestBody IndividualListDTO familyMember, @RequestParam boolean doLink) throws NotFoundException {
+    private ResponseEntity<?> addFamilyMember(@RequestBody IndividualListDTO familyMember) throws NotFoundException {
         Map<String, Object> addFamilyMember = new HashMap<>();
         addFamilyMember.put("status", HttpStatus.OK);
-        addFamilyMember.put("result", serveyorService.addFamilyMember(familyMember, doLink));
+        addFamilyMember.put("result", serveyorService.addFamilyMember(familyMember));
         addFamilyMember.put("message", "Family Details Submitted For Approval");
         return new ResponseEntity<>(addFamilyMember, HttpStatus.OK);
     }
 
     @PostMapping("/editFamilyMember")
-    private ResponseEntity<?> editFamilyMember(@RequestBody IndividualListDTO familyMember, @RequestParam String id) throws NotFoundException {
+    private ResponseEntity<?> editFamilyMember(@RequestBody IndividualListDTO familyMember) throws NotFoundException {
         Map<String, Object> editFamilyMember = new HashMap<>();
         editFamilyMember.put("status", HttpStatus.OK);
-        editFamilyMember.put("result", serveyorService.editFamilyMember(familyMember, id));
+        editFamilyMember.put("result", serveyorService.editFamilyMember(familyMember));
         editFamilyMember.put("message", "Family Details SuccessFully Edited");
         return new ResponseEntity<>(editFamilyMember, HttpStatus.OK);
     }

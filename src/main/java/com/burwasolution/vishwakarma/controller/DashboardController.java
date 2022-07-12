@@ -2,16 +2,14 @@ package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
-import com.burwasolution.vishwakarma.domains.entity.headerFilter.CardDataFilter;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
-import com.burwasolution.vishwakarma.domains.dto.response.location.*;
+import com.burwasolution.vishwakarma.domains.dto.response.location.TableDataFilter;
 import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
 import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.service_impl.service.dashboard.*;
 import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.GroupDataService;
-import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/dashboard")
 public class DashboardController {
@@ -167,24 +165,17 @@ public class DashboardController {
     }
 
     @GetMapping("/getHeaderEmployedFilter")
-    private List<Employed> getHeaderEmployed(){
+    private List<Employed> getHeaderEmployed() {
         return headerService.getHeaderEmployed();
     }
 
     @GetMapping("/getHeaderGovtSchemesFilter")
-    private List<GovtSchemes> getHeaderGovtSchemesFilter(){
+    private List<GovtSchemes> getHeaderGovtSchemesFilter() {
         return headerService.getHeaderGovtSchemesFilter();
     }
 
-
-//    @GetMapping("/getDistrictDataFilter")
-//    private List<DistrictCountDTO> getCountsInDistrict(@RequestParam String districtId) {
-//        return districtService.getCountsInDistrict(districtId);
-//    }
-
-
     @PostMapping("/getCardDataFilter")
-    private ResponseEntity<?> getCardDataFilter(@RequestBody CardDataFilterDTO CardDataFilter){
+    private ResponseEntity<?> getCardDataFilter(@RequestBody CardDataFilterDTO CardDataFilter) {
         Map<String, Object> getCardDataFilter = new HashMap<>();
         getCardDataFilter.put("status", HttpStatus.OK);
         getCardDataFilter.put("result", groupDataService.findByCardDataFilter(CardDataFilter));
@@ -193,16 +184,15 @@ public class DashboardController {
 
     }
 
+    @PostMapping("/getTableDataFilter")
+    private ResponseEntity<?> getTableDataFilter(@RequestBody TableDataFilter tableDataFilter) {
+        Map<String, Object> getTableDataFilter = new HashMap<>();
+        getTableDataFilter.put("status", HttpStatus.OK);
+        getTableDataFilter.put("result", groupDataService.findByTableDataFilter(tableDataFilter));
+        getTableDataFilter.put("message", "Card Data Filter List");
+        return new ResponseEntity<>(getTableDataFilter, HttpStatus.OK);
 
-    @PostMapping("/getLocationDataFilter")
-    private ResponseEntity<?> getLocationDataFilter(@RequestBody FilterCounts filterCounts) throws NotFoundException {
-        Map<String, Object> getLocationDataFilter = new HashMap<>();
-        getLocationDataFilter.put("status", HttpStatus.OK);
-        getLocationDataFilter.put("result", groupDataService.findByLocationFilter(filterCounts));
-        getLocationDataFilter.put("message", "Location Filter List");
-        return new ResponseEntity<>(getLocationDataFilter, HttpStatus.OK);
     }
-
 
 
 }

@@ -1,7 +1,6 @@
 package com.burwasolution.vishwakarma.service_impl.service.dashboard;
 
 import com.burwasolution.vishwakarma.domains.dto.response.location.LocationLists;
-import com.burwasolution.vishwakarma.domains.dto.response.location.StatesDTO;
 import com.burwasolution.vishwakarma.domains.entity.location.States;
 
 import java.util.List;

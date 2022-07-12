@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UnApprovedUsersServiceImpl implements UnApprovedUsersService {
 
-    private UnApprovedUsersRepository unApprovedUsersRepository;
+    private final UnApprovedUsersRepository unApprovedUsersRepository;
 
     @Autowired
     public UnApprovedUsersServiceImpl(UnApprovedUsersRepository unApprovedUsersRepository) {

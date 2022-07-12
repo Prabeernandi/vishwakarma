@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/dashboard/getStateList", "/dashboard/getDistrictList", "/dashboard/getTehsilList",
                         "/dashboard/getBlockList", "/dashboard/getVillageList", "/dashboard/getCategoryList").permitAll()
                 .antMatchers("/dashboard/getHeaderEmployedFilter", "/dashboard/getHeaderGovtSchemesFilter").permitAll()
-                .antMatchers("/dashboard/getCardDataFilter").permitAll()
+                .antMatchers("/dashboard/getCardDataFilter", "/dashboard/getTableDataFilter").permitAll()
                 .antMatchers("/dashboard/saveStateDetails", "/dashboard/saveDistrictData", "/dashboard/saveTehsilData",
                         "/dashboard/saveBlockData", "/dashboard/saveVillageData", "/dashboard/saveCategoryData").permitAll()
                 .antMatchers("/dashboard/getDistrictDataFilter", "/dashboard/getTehsilDataFilter", "/dashboard/getBlockDataFilter",

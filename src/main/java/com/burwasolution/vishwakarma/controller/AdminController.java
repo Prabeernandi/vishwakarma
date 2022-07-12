@@ -11,10 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-@CrossOrigin(origins = "*", maxAge = 3600)
+
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -48,10 +50,10 @@ public class AdminController {
 
 
     @PostMapping("/sendOtp")
-    private ResponseEntity<?> sendOtp(@RequestBody Otp otp,boolean status) throws NotFoundException {
+    private ResponseEntity<?> sendOtp(@RequestBody Otp otp, boolean status) throws NotFoundException, IOException {
         Map<String, Object> sendOtp = new HashMap<>();
         sendOtp.put("status", HttpStatus.OK);
-        sendOtp.put("result", userService.sendOtp(otp,status));
+        sendOtp.put("result", userService.sendOtp(otp, status));
         sendOtp.put("message", "OTP Sent SuccessFully");
         return new ResponseEntity<>(sendOtp, HttpStatus.OK);
     }
@@ -66,7 +68,7 @@ public class AdminController {
     }
 
     @GetMapping("/unVerifiedMemberDetails")
-    private ResponseEntity<?> unVerifyDetails( @RequestParam String idNo) throws NotFoundException {
+    private ResponseEntity<?> unVerifyDetails(@RequestParam String idNo) throws NotFoundException {
         Map<String, Object> unVerifyDetails = new HashMap<>();
         unVerifyDetails.put("status", HttpStatus.OK);
         unVerifyDetails.put("result", userService.unVerifyDetails(idNo));
@@ -79,7 +81,7 @@ public class AdminController {
         Map<String, Object> getFamilyList = new HashMap<>();
         getFamilyList.put("status", HttpStatus.OK);
         getFamilyList.put("result", userService.getFamilyList(idNo));
-        getFamilyList.put("message", "UnVerified Family List");
+        getFamilyList.put("message", "Family Member Details");
         return new ResponseEntity<>(getFamilyList, HttpStatus.OK);
     }
 
@@ -88,5 +90,7 @@ public class AdminController {
 
         return userService.insertBulkUsers(users);
     }
+
+
 
 }

@@ -6,7 +6,7 @@ import com.burwasolution.vishwakarma.controller.exceptionHandler.ResourceAlready
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.LoginUser;
-import com.burwasolution.vishwakarma.domains.dto.users.ServeyorOtp;
+import com.burwasolution.vishwakarma.domains.dto.users.OtpDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.ServeyorSignUpDTO;
 import com.burwasolution.vishwakarma.domains.entity.basic.Otp;
 import com.burwasolution.vishwakarma.domains.entity.basic.Serveyor;
@@ -15,6 +15,7 @@ import com.burwasolution.vishwakarma.reprository.users.OtpRepository;
 import com.burwasolution.vishwakarma.reprository.users.ServeyorRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
 import com.burwasolution.vishwakarma.service_impl.service.basic.CountAllService;
+import com.burwasolution.vishwakarma.service_impl.service.basic.Msg91Services;
 import com.burwasolution.vishwakarma.service_impl.service.basic.RoleService;
 import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;
 import javassist.NotFoundException;
@@ -32,6 +33,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -52,7 +54,9 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     @Autowired
     public UsersServiceImpl(UsersRepository usersRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils
             , RoleService roleService, CountAllService countAllService, BCryptPasswordEncoder bCryptPasswordEncoder
-            , MongoTemplate mongoTemplate, ServeyorRepository serveyorRepository, OtpRepository otpRepository) {
+            , MongoTemplate mongoTemplate, ServeyorRepository serveyorRepository, OtpRepository otpRepository
+
+    ) {
         this.usersRepository = usersRepository;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
@@ -321,52 +325,56 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
 //    }
 
 
-
-
-
     @Override
-    public ServeyorOtp sendOtp(Otp otp, boolean status) throws NotFoundException {
+    public OtpDTO sendOtp(Otp otp, boolean status) throws NotFoundException, IOException {
         status = false;
-        ServeyorOtp serveyorOtp = new ServeyorOtp();
+        String message = null;
+        OtpDTO otpDTO = new OtpDTO();
         Random random = new Random();
-        if (verifyMobileNumber(otp.getMobileNumber(), status) ) {
+        if (verifyMobileNumber(otp.getMobileNumber(), status)) {
             final long ONE_MINUTE_IN_MILLIS = 60000;
 
             Calendar date = Calendar.getInstance();
             long t = date.getTimeInMillis();
-            Date afterAddingTenMins = new Date(t + (5 * ONE_MINUTE_IN_MILLIS));
+            Date afterAddingTenMins = new Date(t + (10 * ONE_MINUTE_IN_MILLIS));
+            String mobileNumber = otp.getMobileNumber();
 
             String generateOtp = String.format("%06d", random.nextInt(999999));
+            message = "Dear User, Your Otp for Registration is " + generateOtp + ". Please Don't Disclose to anyOne Else. Thanks-Patanjali";
+            String sms = Msg91Services.sendRegSms(generateOtp, mobileNumber);
+            log.error(sms);
+            if (sms != null) {
+                otp = Otp.builder()
+                        .otp(generateOtp)
+                        .mobileNumber(otp.getMobileNumber())
+                        .expiryTime(afterAddingTenMins)
+                        .build();
+                otpRepository.save(otp);
+                otpDTO = OtpDTO.builder()
+                        .otp(generateOtp)
+                        .mobileNumber(otp.getMobileNumber())
+                        .expiryTime(afterAddingTenMins)
+                        .build();
+                log.error("Expiry Time : " + afterAddingTenMins);
 
+            }
 
-            otp = Otp.builder()
-                    .otp(generateOtp)
-                    .mobileNumber(otp.getMobileNumber())
-                    .expiryTime(afterAddingTenMins)
-                    .build();
-            otpRepository.save(otp);
-            serveyorOtp = ServeyorOtp.builder()
-                    .otp(generateOtp)
-                    .mobileNumber(otp.getMobileNumber())
-                    .expiryTime(afterAddingTenMins)
-                    .build();
-            log.error("Expiry Time : " + afterAddingTenMins);
 
         } else {
             throw new NotFoundException("Oops Not Data Found");
         }
-        return serveyorOtp;
+        return otpDTO;
 
     }
 
     @Override
-    public ServeyorSignUpDTO verifyOtp(Otp otp) throws NotFoundException {
+    public OtpDTO verifyOtp(Otp otp) throws NotFoundException {
 
         ServeyorSignUpDTO verifyResponse = new ServeyorSignUpDTO();
-
+        OtpDTO otpResponse = new OtpDTO();
         if (otp.getOtp().length() == 6 && otp.getMobileNumber().length() == 10) {
-            List<Otp> otpCheck = otpRepository.findByMobileNumberAndOtp(otp.getMobileNumber(), otp.getOtp());
-            Serveyor response = serveyorRepository.findByMobileNumber(otp.getMobileNumber());
+            List<Otp> otpCheck = otpRepository.findTopOneByMobileNumberAndOtp(otp.getMobileNumber(), otp.getOtp());
+//            Serveyor response = serveyorRepository.findByMobileNumber(otp.getMobileNumber());
 
 
             if (otpCheck.size() > 0) {
@@ -378,26 +386,21 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                     } else if (otpValidate.getOtp().equals(otp.getOtp())) {
                         otp = Otp.builder()
                                 .message("Mobile Number Verified SuccessFully")
+                                .verifyOtp(otp.getOtp())
                                 .build();
-
-                        verifyResponse = ServeyorSignUpDTO.builder()
-                                .username(response.getUsername())
-                                .dateOfBirth(response.getDateOfBirth())
-                                .emailId(response.getEmailId())
-                                .mobileNumber(response.getMobileNumber())
-                                .govtDepart(response.getGovtDepart())
-                                .govtId(response.getGovtId())
-                                .gender(response.getGender())
-                                .designation(response.getDesignation())
-                                .build();
-
                         otpRepository.save(otp);
+
+                        otpResponse = OtpDTO.builder()
+                                .otp(otpValidate.getOtp())
+                                .verifyOtp(otp.getVerifyOtp())
+                                .build();
+
 
                     }
 
 
                 }
-                return verifyResponse;
+                return otpResponse;
 
             } else {
                 throw new NotFoundException("Invalid OTP");
@@ -448,13 +451,16 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
             IndividualListDTO getUsersList = IndividualListDTO.builder()
                     .familyId(usersFamilyList.getFamilyId())
                     .fullName(usersFamilyList.getFullName())
-                    .address(usersFamilyList.getAddress())
+                    .address(usersFamilyList.getHouseNumber() + "," + usersFamilyList.getTehsilName() + "," + usersFamilyList.getDistrictName() + "," + usersFamilyList.getStateName())
                     .dateOfBirth(usersFamilyList.getDateOfBirth())
                     .voterId(usersFamilyList.getVoterId())
                     .aadharNo(usersFamilyList.getAadharNo())
                     .panCardNo(usersFamilyList.getPanCardNo())
                     .mobileNumber(usersFamilyList.getMobileNumber())
+                    .govtSchemeEnrolled(usersFamilyList.getGovtSchemeEnrolled())
+                    .schemeCode(usersFamilyList.getSchemeCode())
                     .employed(usersFamilyList.getEmployed())
+                    .employedCode(usersFamilyList.getEmployedCode())
                     .epf_nps(usersFamilyList.getEpf_nps())
                     .gramPanchayat(usersFamilyList.getGramPanchayat())
                     .income(usersFamilyList.getIncome())
