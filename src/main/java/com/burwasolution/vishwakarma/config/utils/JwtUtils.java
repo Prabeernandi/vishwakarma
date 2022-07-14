@@ -1,4 +1,4 @@
-package com.burwasolution.vishwakarma.config;
+package com.burwasolution.vishwakarma.config.utils;
 
 import com.burwasolution.vishwakarma.config.utils.Constants;
 import io.jsonwebtoken.*;

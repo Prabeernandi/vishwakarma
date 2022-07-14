@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.config.utils;
 
-import com.burwasolution.vishwakarma.config.JwtUtils;
 import com.burwasolution.vishwakarma.controller.exceptionHandler.UnauthorizedException;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
 import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;

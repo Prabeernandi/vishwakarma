@@ -15,12 +15,11 @@ public class ServeyorSignUpDTO {
 
     private String username;
     private String gender;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String emailId;
     private String mobileNumber;
     private String govtDepart;
     private String govtId;
     private String designation;
-
-
+    private String role;
 }

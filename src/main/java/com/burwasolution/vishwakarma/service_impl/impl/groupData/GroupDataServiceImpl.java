@@ -60,16 +60,10 @@ public class GroupDataServiceImpl implements GroupDataService {
                         .stateCode(setHeadList.getStateCode())
                         .districtCode(setHeadList.getDistrictCode())
                         .build();
-
-
             }
             familyList.add(familyListDTO);
         }
-
-
         return familyList;
-
-
     }
 
 
@@ -232,7 +226,6 @@ public class GroupDataServiceImpl implements GroupDataService {
 
     }
 
-
     @Override
     public List<EmployedDetailsDTO> getListBySpecificEmployed(Users users) {
         List<Users> usersList = new ArrayList<>();
@@ -255,12 +248,6 @@ public class GroupDataServiceImpl implements GroupDataService {
         return individualMemberList;
 
     }
-
-
-
-
-
-
 
     public Long getFamilyCounts(List<Users> users) {
 
@@ -333,7 +320,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                        usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -342,13 +329,13 @@ public class GroupDataServiceImpl implements GroupDataService {
 
             } else if (blockCode != null) {
                 if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBar(blockCode, ageBar);
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGender(blockCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCode(blockCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode, ageBar, gender, employedCode, schemeCode);
                 } else {
                     usersList = usersRepository.findAllByBlockCode(blockCode);
                 }
@@ -358,7 +345,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGender(tehsilCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, gender, employedCode);
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(tehsilCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -371,7 +358,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGender(districtCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, gender, employedCode);
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(districtCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -437,7 +424,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -446,13 +433,13 @@ public class GroupDataServiceImpl implements GroupDataService {
 
             } else if (blockCode != null) {
                 if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBar(villageCode, ageBar);
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGender(villageCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, gender, employedCode);
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
                 } else {
                     usersList = usersRepository.findAllByBlockCode(blockCode);
                 }
@@ -462,7 +449,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGender(tehsilCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, gender, employedCode);
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(tehsilCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -475,7 +462,7 @@ public class GroupDataServiceImpl implements GroupDataService {
                 } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
                     usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGender(districtCode, ageBar, gender);
                 } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, gender, employedCode);
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, ageBar, gender, employedCode);
                 } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
                     usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(districtCode, ageBar, gender, employedCode, schemeCode);
                 } else {
@@ -494,14 +481,18 @@ public class GroupDataServiceImpl implements GroupDataService {
             employedCounts.put("count", getEmployedCounts(usersList).longValue());
 
             Map<String, Object> schemeCounts = new HashMap<>();
-            schemeCounts.put("name", "Employed");
+            schemeCounts.put("name", "govtSchemeEnrolled");
             schemeCounts.put("count", getSchemeCounts(usersList).longValue());
+
+            Map<String, Object> vMulCounts = new HashMap<>();
+            vMulCounts.put("name", "vMulyankana");
+            vMulCounts.put("count", 17765);
 
             ArrayListMultimap<String, Object> addAllCounts = ArrayListMultimap.create();
             addAllCounts.put("counts", familyCounts);
             addAllCounts.put("counts", employedCounts);
             addAllCounts.put("counts", schemeCounts);
-
+            addAllCounts.put("counts", vMulCounts);
 
             tableDataFilter2 = TableDataFilter.builder()
                     .stateCode(tableDataFilter.getStateCode())

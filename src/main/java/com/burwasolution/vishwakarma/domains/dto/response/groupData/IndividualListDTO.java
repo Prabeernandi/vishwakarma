@@ -1,5 +1,6 @@
 package com.burwasolution.vishwakarma.domains.dto.response.groupData;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class IndividualListDTO {
     private String fullName;
     private String address;
     private Date dateOfBirth;
+    private String displayDob;
     private String voterId;
     private String aadharNo;
     private String panCardNo;

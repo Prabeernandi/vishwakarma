@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Document(collection = "unApprovedUsers")
-public class UnApprovedUsers extends BaseObject {
+public class FamilyMembersDetails extends BaseObject {
 
 
     private String familyId;

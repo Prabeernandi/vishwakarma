@@ -1,6 +1,9 @@
 package com.burwasolution.vishwakarma.domains.entity.basic;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 @Document(collection = "serveyor")
 public class Serveyor extends BaseObject {
 
@@ -28,6 +30,7 @@ public class Serveyor extends BaseObject {
     private boolean isVerified = false;
     private List<Role> roles = new ArrayList<>();
     private String authToken;
+    private String role;
     @LastModifiedDate
     private LocalDateTime authTokenCreationTime;
 

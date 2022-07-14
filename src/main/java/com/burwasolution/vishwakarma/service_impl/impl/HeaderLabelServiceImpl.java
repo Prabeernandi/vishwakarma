@@ -9,7 +9,7 @@ import com.burwasolution.vishwakarma.reprository.generalDetails.HeaderLabelDetai
 import com.burwasolution.vishwakarma.reprository.users.EmployedRepository;
 import com.burwasolution.vishwakarma.reprository.users.GovtSchemesRepository;
 import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
-import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
+import com.burwasolution.vishwakarma.service_impl.service.header.HeaderLabelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

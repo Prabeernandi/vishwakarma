@@ -21,4 +21,5 @@ public class Otp extends BaseObject{
     private String mobileNumber;
     private String message;
     private String verifyOtp;
+    private String role;
 }

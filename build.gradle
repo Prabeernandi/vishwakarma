@@ -24,7 +24,10 @@ repositories {
     mavenCentral()
 }
 
+project.buildDir='../Project Details/War'
+
 dependencies {
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'org.springframework.boot:spring-boot-starter-tomcat:2.6.2'
     implementation 'org.springframework.boot:spring-boot-starter'

@@ -1,4 +1,4 @@
-package com.burwasolution.vishwakarma.service_impl.service.general;
+package com.burwasolution.vishwakarma.service_impl.service.header;
 
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;

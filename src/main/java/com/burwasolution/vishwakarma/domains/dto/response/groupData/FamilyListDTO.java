@@ -10,13 +10,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class FamilyListDTO {
 
     private String name;
     private String userId;
     private String familyId;
     private String id;
+    private String voterId;
+    private String address;
     private int members;
     private String stateCode;
     private String districtCode;

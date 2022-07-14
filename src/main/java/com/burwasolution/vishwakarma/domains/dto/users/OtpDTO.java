@@ -19,4 +19,5 @@ public class OtpDTO {
     private String mobileNumber;
     private String message;
     private String verifyOtp;
+    private String role;
 }

@@ -1,6 +1,7 @@
 package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.users.LoginUser;
+import com.burwasolution.vishwakarma.domains.dto.users.ServeyorSignUpDTO;
 import com.burwasolution.vishwakarma.domains.entity.basic.Otp;
 import com.burwasolution.vishwakarma.domains.entity.basic.Serveyor;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,7 @@ public class AdminController {
     }
 
     @PostMapping("/serveyorSignUp")
-    private ResponseEntity<?> serveyorSignUp(@RequestBody Serveyor serveyor) throws NotFoundException {
+    private ResponseEntity<?> serveyorSignUp(@RequestBody ServeyorSignUpDTO serveyor) throws NotFoundException, ParseException {
         Map<String, Object> serveyorSignUp = new HashMap<>();
         serveyorSignUp.put("status", HttpStatus.OK);
         serveyorSignUp.put("result", userService.serveyorSignUp(serveyor));
@@ -48,8 +50,7 @@ public class AdminController {
         return new ResponseEntity<>(serveyorSignUp, HttpStatus.OK);
     }
 
-
-    @PostMapping("/sendOtp")
+    @PostMapping("/familyLinkSendOtp")
     private ResponseEntity<?> sendOtp(@RequestBody Otp otp, boolean status) throws NotFoundException, IOException {
         Map<String, Object> sendOtp = new HashMap<>();
         sendOtp.put("status", HttpStatus.OK);
@@ -58,7 +59,17 @@ public class AdminController {
         return new ResponseEntity<>(sendOtp, HttpStatus.OK);
     }
 
-    @PostMapping("/verifyOtp")
+
+    @PostMapping("/serveyorSendOtp")
+    private ResponseEntity<?> serveyorSendOtp(@RequestBody Otp otp, boolean status) throws NotFoundException, IOException {
+        Map<String, Object> serveyorSendOtp = new HashMap<>();
+        serveyorSendOtp.put("status", HttpStatus.OK);
+        serveyorSendOtp.put("result", userService.serveyorSendOtp(otp, status));
+        serveyorSendOtp.put("message", "OTP Sent SuccessFully");
+        return new ResponseEntity<>(serveyorSendOtp, HttpStatus.OK);
+    }
+
+    @PostMapping("/familyLinkVerifyOtp")
     private ResponseEntity<?> verifyOtp(@RequestBody Otp otp) throws NotFoundException {
         Map<String, Object> verifyOtp = new HashMap<>();
         verifyOtp.put("status", HttpStatus.OK);
@@ -67,17 +78,26 @@ public class AdminController {
         return new ResponseEntity<>(verifyOtp, HttpStatus.OK);
     }
 
+    @PostMapping("/serveyorVerifyOtp")
+    private ResponseEntity<?> serveyorVerifyOtp(@RequestBody Otp otp) throws NotFoundException {
+        Map<String, Object> serveyorVerifyOtp = new HashMap<>();
+        serveyorVerifyOtp.put("status", HttpStatus.OK);
+        serveyorVerifyOtp.put("result", userService.serveyorVerifyOtp(otp));
+        serveyorVerifyOtp.put("message", "OTP SuccessFully Verified");
+        return new ResponseEntity<>(serveyorVerifyOtp, HttpStatus.OK);
+    }
+
     @GetMapping("/unVerifiedMemberDetails")
-    private ResponseEntity<?> unVerifyDetails(@RequestParam String idNo) throws NotFoundException {
+    private ResponseEntity<?> unVerifyDetails(@RequestParam String idName, @RequestParam String idNo) throws NotFoundException {
         Map<String, Object> unVerifyDetails = new HashMap<>();
         unVerifyDetails.put("status", HttpStatus.OK);
-        unVerifyDetails.put("result", userService.unVerifyDetails(idNo));
+        unVerifyDetails.put("result", userService.unVerifyDetails(idName,idNo));
         unVerifyDetails.put("message", "UnVerified Family List");
         return new ResponseEntity<>(unVerifyDetails, HttpStatus.OK);
     }
 
     @GetMapping("/getFamilyMemberDetails")
-    private ResponseEntity<?> getFamilyList(@RequestParam String idNo) throws NotFoundException {
+    private ResponseEntity<?> getFamilyList(@RequestParam String idNo) throws NotFoundException, ParseException {
         Map<String, Object> getFamilyList = new HashMap<>();
         getFamilyList.put("status", HttpStatus.OK);
         getFamilyList.put("result", userService.getFamilyList(idNo));
@@ -87,7 +107,6 @@ public class AdminController {
 
     @PostMapping("/insertBulkUsers")
     private List<Users> insertBulkUsers(@RequestBody List<Users> users) {
-
         return userService.insertBulkUsers(users);
     }
 

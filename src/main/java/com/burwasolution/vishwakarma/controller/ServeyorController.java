@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +35,7 @@ public class ServeyorController {
         return new ResponseEntity<>(addFamilyMember, HttpStatus.OK);
     }
 
-    @PostMapping("/editFamilyMember")
+    @PatchMapping("/editFamilyMember")
     private ResponseEntity<?> editFamilyMember(@RequestBody IndividualListDTO familyMember) throws NotFoundException {
         Map<String, Object> editFamilyMember = new HashMap<>();
         editFamilyMember.put("status", HttpStatus.OK);
@@ -59,6 +61,24 @@ public class ServeyorController {
         getGovtSchemes.put("result", serveyorService.getGovtSchemes());
         getGovtSchemes.put("message", "Govt Schemes List");
         return new ResponseEntity<>(getGovtSchemes, HttpStatus.OK);
+    }
+
+    @GetMapping("/getUnVerifiedMemberList")
+    private ResponseEntity<?> getUnVerifiedMemberList(int pageNumber) {
+        Map<String, Object> getUnVerifiedMemberList = new HashMap<>();
+        getUnVerifiedMemberList.put("status", HttpStatus.OK);
+        getUnVerifiedMemberList.put("result", serveyorService.getUnVerifiedMemberList(pageNumber));
+        getUnVerifiedMemberList.put("message", "Govt Schemes List");
+        return new ResponseEntity<>(getUnVerifiedMemberList, HttpStatus.OK);
+    }
+
+    @PostMapping("/serveyorUploadImage")
+    private ResponseEntity<?> serveyorUploadImage(String idName, String idNo, MultipartFile file) throws IOException {
+        Map<String, Object> serveyorUploadImage = new HashMap<>();
+        serveyorUploadImage.put("status", HttpStatus.OK);
+        serveyorUploadImage.put("result", serveyorService.serveyorUploadImage(idName, idNo, file));
+        serveyorUploadImage.put("message", "Govt Schemes List");
+        return new ResponseEntity<>(serveyorUploadImage, HttpStatus.OK);
     }
 
 }

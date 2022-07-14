@@ -1,6 +1,7 @@
 package com.burwasolution.vishwakarma.service_impl.impl.dashboard.basic;
 
-import com.burwasolution.vishwakarma.config.JwtUtils;
+import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
+import com.burwasolution.vishwakarma.config.utils.JwtUtils;
 import com.burwasolution.vishwakarma.controller.exceptionHandler.CustomException;
 import com.burwasolution.vishwakarma.controller.exceptionHandler.ResourceAlreadyExists;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
@@ -20,10 +21,12 @@ import com.burwasolution.vishwakarma.service_impl.service.basic.RoleService;
 import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,11 +37,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
 @Slf4j
-public class UsersServiceImpl implements UserService, UserDetailsService {
+public class UsersServiceImpl implements UserService, UserDetailsService, ApplicationConstant {
 
     private final UsersRepository usersRepository;
     private final JwtUtils jwtUtils;
@@ -49,13 +54,13 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     private final AuthenticationManager authenticationManager;
     private final ServeyorRepository serveyorRepository;
     private final OtpRepository otpRepository;
-
+    private final ModelMapper modelMapper;
 
     @Autowired
     public UsersServiceImpl(UsersRepository usersRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils
             , RoleService roleService, CountAllService countAllService, BCryptPasswordEncoder bCryptPasswordEncoder
             , MongoTemplate mongoTemplate, ServeyorRepository serveyorRepository, OtpRepository otpRepository
-
+            , ModelMapper modelMapper
     ) {
         this.usersRepository = usersRepository;
         this.authenticationManager = authenticationManager;
@@ -66,6 +71,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
         this.mongoTemplate = mongoTemplate;
         this.serveyorRepository = serveyorRepository;
         this.otpRepository = otpRepository;
+        this.modelMapper = modelMapper;
 
     }
 
@@ -157,6 +163,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
         return usersRepository.findUserByUsername(username);
     }
 
+    @Async("threadPoolTaskExecutor")
     @Override
     public List<Users> insertBulkUsers(List<Users> users) {
 
@@ -178,13 +185,14 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
 
                 Users saveUser = Users.builder()
                         .username(userlist.getUsername())
-                        .fullName(userlist.getFullName())
+                        .fullName(userlist.getFullName().toLowerCase())
                         .fatherSpouseName(userlist.getFatherSpouseName())
                         .password(newPassword)
                         .ageBar(ageBar)
                         .govtSchemeEnrolled(userlist.getGovtSchemeEnrolled())
                         .employed(userlist.getEmployed())
                         .stateName(userlist.getStateName())
+                        .address(userlist.getAddress())
                         .districtName(userlist.getDistrictName())
                         .villageName(userlist.getVillageName())
                         .isManrekaEnabled(userlist.isManrekaEnabled())
@@ -192,6 +200,8 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .hasPradhanMantriAwaasYojna(userlist.isHasPradhanMantriAwaasYojna())
                         .relationWithHof(userlist.getRelationWithHof())
                         .familyId(userlist.getFamilyId())
+                        .isManrekaEnabled(userlist.isManrekaEnabled())
+                        .manrekaRegNo(userlist.getManrekaRegNo())
                         .houseNumber(userlist.getHouseNumber())
                         .dateOfBirth(userlist.getDateOfBirth())
                         .mobileNumber(userlist.getMobileNumber())
@@ -213,13 +223,14 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .voterId(userlist.getVoterId())
                         .build();
                 usersRepository.save(saveUser);
-                log.info("updated " + count++);
+                log.info("Added " + count++);
             } else if (usersData != null) {
                 usersData.setUsername(userlist.getUsername());
-                usersData.setFullName(userlist.getFullName());
+                usersData.setFullName(userlist.getFullName().toLowerCase());
                 usersData.setFatherSpouseName(userlist.getFatherSpouseName());
                 usersData.setPassword(newPassword);
                 usersData.setAgeBar(ageBar);
+                usersData.setAddress(userlist.getAddress());
                 usersData.setStateName(userlist.getStateName());
                 usersData.setDistrictName(userlist.getDistrictName());
                 usersData.setVillageName(userlist.getVillageName());
@@ -262,7 +273,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ServeyorSignUpDTO serveyorSignUp(Serveyor serveyor) throws NotFoundException {
+    public ServeyorSignUpDTO serveyorSignUp(ServeyorSignUpDTO serveyor) throws NotFoundException, ParseException {
 
         Serveyor serveyorCheck = serveyorRepository.findByUsername(serveyor.getUsername());
         Serveyor serveyorMobileCheck = serveyorRepository.findByMobileNumber(serveyor.getMobileNumber());
@@ -278,19 +289,21 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
             throw new NotFoundException("Invalid Mobile Number");
         } else {
 
-            ServeyorSignUpDTO signUpDTO = ServeyorSignUpDTO.builder()
+            Date date_format = new SimpleDateFormat("yyyy-MM-dd").parse(serveyor.getDateOfBirth());
+            Serveyor signUp = Serveyor.builder()
                     .username(serveyor.getUsername())
                     .gender("" + serveyor.getGender().toLowerCase().trim())
                     .designation(serveyor.getDesignation())
-                    .dateOfBirth(serveyor.getDateOfBirth())
+                    .dateOfBirth(date_format)
                     .emailId(serveyor.getEmailId())
                     .govtDepart(serveyor.getGovtDepart())
                     .govtId(serveyor.getGovtId())
                     .mobileNumber(serveyor.getMobileNumber())
+                    .role(ROLE_SERVEYOR)
                     .build();
 
-            serveyorRepository.save(serveyor);
-            return signUpDTO;
+            serveyorRepository.save(signUp);
+            return serveyor;
         }
 
 
@@ -310,37 +323,34 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
 
-//    public boolean verifyServeyor(String mobileNumber, boolean status) throws NotFoundException {
-//
-//        Serveyor serveyor = serveyorRepository.findByMobileNumber(mobileNumber);
-//
-//        if (serveyor == null) {
-//            throw new NotFoundException("The Serveyor is not Registered Or Not yet Verified");
-//        } else if (!serveyor.isActive() || serveyor.isDeleted()) {
-//            throw new NotFoundException("Serveyor is InActive or Deleted, Please Contact Support Team");
-//        } else {
-//            status = true;
-//        }
-//        return status;
-//    }
+    public boolean verifyServeyor(String mobileNumber, boolean status) throws NotFoundException {
+
+        Serveyor serveyor = serveyorRepository.findByMobileNumber(mobileNumber);
+        if (serveyor == null) {
+            throw new NotFoundException("The Serveyor Details is Not Available");
+        }
+        if (!serveyor.isActive() || serveyor.isDeleted() || !serveyor.isVerified()) {
+
+            throw new NotFoundException("Serveyor is InActive, Deleted Or Not Verified, Please Contact Support Team");
+        } else {
+            status = true;
+        }
+        return status;
+    }
 
 
     @Override
     public OtpDTO sendOtp(Otp otp, boolean status) throws NotFoundException, IOException {
         status = false;
-        String message = null;
         OtpDTO otpDTO = new OtpDTO();
         Random random = new Random();
         if (verifyMobileNumber(otp.getMobileNumber(), status)) {
-            final long ONE_MINUTE_IN_MILLIS = 60000;
-
             Calendar date = Calendar.getInstance();
             long t = date.getTimeInMillis();
             Date afterAddingTenMins = new Date(t + (10 * ONE_MINUTE_IN_MILLIS));
             String mobileNumber = otp.getMobileNumber();
 
             String generateOtp = String.format("%06d", random.nextInt(999999));
-            message = "Dear User, Your Otp for Registration is " + generateOtp + ". Please Don't Disclose to anyOne Else. Thanks-Patanjali";
             String sms = Msg91Services.sendRegSms(generateOtp, mobileNumber);
             log.error(sms);
             if (sms != null) {
@@ -348,14 +358,16 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                         .otp(generateOtp)
                         .mobileNumber(otp.getMobileNumber())
                         .expiryTime(afterAddingTenMins)
+                        .role(ROLE_USER)
                         .build();
                 otpRepository.save(otp);
                 otpDTO = OtpDTO.builder()
                         .otp(generateOtp)
                         .mobileNumber(otp.getMobileNumber())
+                        .role(ROLE_USER)
                         .expiryTime(afterAddingTenMins)
                         .build();
-                log.error("Expiry Time : " + afterAddingTenMins);
+                log.info("Expiry Time : " + afterAddingTenMins);
 
             }
 
@@ -366,6 +378,46 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
         return otpDTO;
 
     }
+
+    @Override
+    public OtpDTO serveyorSendOtp(Otp otp, boolean status) throws NotFoundException, IOException {
+        status = false;
+        OtpDTO otpDTO = new OtpDTO();
+        Random random = new Random();
+        if (verifyMobileNumber(otp.getMobileNumber(), status) && verifyServeyor(otp.getMobileNumber(), status)) {
+            Calendar date = Calendar.getInstance();
+            long t = date.getTimeInMillis();
+            Date afterAddingTenMins = new Date(t + (10 * ONE_MINUTE_IN_MILLIS));
+            String mobileNumber = otp.getMobileNumber();
+
+            String generateOtp = String.format("%06d", random.nextInt(999999));
+            String sms = Msg91Services.sendRegSms(generateOtp, mobileNumber);
+            log.error(sms);
+            if (sms != null) {
+                otp = Otp.builder()
+                        .otp(generateOtp)
+                        .mobileNumber(otp.getMobileNumber())
+                        .expiryTime(afterAddingTenMins)
+                        .role(ROLE_SERVEYOR)
+                        .build();
+                otpRepository.save(otp);
+                otpDTO = OtpDTO.builder()
+                        .otp(generateOtp)
+                        .mobileNumber(otp.getMobileNumber())
+                        .role(ROLE_SERVEYOR)
+                        .expiryTime(afterAddingTenMins)
+                        .build();
+                log.info("Expiry Time : " + afterAddingTenMins);
+
+            }
+
+
+        } else {
+            throw new NotFoundException("Oops Not Data Found");
+        }
+        return otpDTO;
+    }
+
 
     @Override
     public OtpDTO verifyOtp(Otp otp) throws NotFoundException {
@@ -384,20 +436,15 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
                     if (new Date().after(otpValidate.getExpiryTime())) {
                         throw new NotFoundException("OTP Expired, Please Try Again");
                     } else if (otpValidate.getOtp().equals(otp.getOtp())) {
-                        otp = Otp.builder()
-                                .message("Mobile Number Verified SuccessFully")
-                                .verifyOtp(otp.getOtp())
-                                .build();
-                        otpRepository.save(otp);
+                        otpValidate.setVerifyOtp(otp.getOtp());
+                        otpValidate.setMessage("Mobile Number Verified SuccessFully");
+                        otpRepository.save(otpValidate);
 
                         otpResponse = OtpDTO.builder()
                                 .otp(otpValidate.getOtp())
-                                .verifyOtp(otp.getVerifyOtp())
+                                .verifyOtp(otpValidate.getVerifyOtp())
                                 .build();
-
-
                     }
-
 
                 }
                 return otpResponse;
@@ -412,28 +459,93 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<FamilyListDTO> unVerifyDetails(String idNo) throws NotFoundException {
+    public ServeyorSignUpDTO serveyorVerifyOtp(Otp otp) throws NotFoundException {
+        ServeyorSignUpDTO verifyResponse = new ServeyorSignUpDTO();
+
+        if (otp.getOtp().length() == 6 && otp.getMobileNumber().length() == 10) {
+            List<Otp> otpCheck = otpRepository.findTopOneByMobileNumberAndOtp(otp.getMobileNumber(), otp.getOtp());
+            Serveyor response = serveyorRepository.findByMobileNumber(otp.getMobileNumber());
+
+            if (response != null && verifyServeyor(otp.getMobileNumber(), false)) {
+
+                if (otpCheck.size() > 0) {
+                    log.error(otp.getOtp());
+
+                    for (Otp otpValidate : otpCheck) {
+                        if (new Date().after(otpValidate.getExpiryTime())) {
+                            throw new NotFoundException("OTP Expired, Please Try Again");
+                        } else if (otpValidate.getOtp().equals(otp.getOtp())) {
+                            otpValidate.setVerifyOtp(otp.getOtp());
+                            otpValidate.setMessage("Mobile Number Verified SuccessFully");
+                            otpRepository.save(otpValidate);
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                            verifyResponse = ServeyorSignUpDTO.builder()
+                                    .username(response.getUsername())
+                                    .gender(response.getGender())
+                                    .dateOfBirth("" + sdf.format(response.getDateOfBirth()))
+                                    .emailId(response.getEmailId())
+                                    .mobileNumber(response.getMobileNumber())
+                                    .govtId(response.getGovtId())
+                                    .govtDepart(response.getGovtDepart())
+                                    .designation(response.getDesignation())
+                                    .role(response.getRole())
+                                    .build();
+                        }
+
+                    }
+                    return verifyResponse;
+
+                } else {
+                    throw new NotFoundException("Invalid OTP");
+                }
+            } else {
+                throw new NotFoundException("Serveyor Details Not Found Or It May Be Inactive");
+            }
+        } else {
+            throw new NotFoundException("Invalid Details");
+        }
+
+    }
+
+    @Override
+    public List<FamilyListDTO> unVerifyDetails(String idName, String idNo) throws NotFoundException {
         List<FamilyListDTO> familyListDTOS = new ArrayList<>();
         List<Users> usersList = new ArrayList<>();
         FamilyListDTO voterIdList = new FamilyListDTO();
 
+        if (idName.equals("voterId")) {
+            usersList = usersRepository.findByVoterIdAndFullName(idNo.trim());
 
-        usersList = usersRepository.findByVoterId(idNo);
+        } else if (idName.equals("rationId")) {
+            usersList = usersRepository.findByRationCardNumber(idNo.trim());
+        } else if (idName.equals("manregaId")) {
+            usersList = usersRepository.findByManrekaRegNo(idNo.trim());
+        } else if (idName.equals("bhulekhId")) {
+            usersList = usersRepository.findByBhulekhId(idNo.trim());
+        }
 
         if (usersList.size() > 0) {
             for (Users checkByVoterId : usersList) {
 
-                List<Users> usersFamilyIdList = usersRepository.findAllByFamilyId(checkByVoterId.getFamilyId());
-
-                for (Users familyList : usersFamilyIdList) {
-
-                    voterIdList = FamilyListDTO.builder()
-                            .name(familyList.getFullName())
-                            .idNo(familyList.getVoterId())
-                            .familyId(checkByVoterId.getFamilyId())
-                            .build();
-
+                if (idName.equals("rationId")) {
+                    idNo = checkByVoterId.getVoterId();
+                } else if (idName.equals("manregaId")) {
+                    idNo = checkByVoterId.getManrekaRegNo();
+                } else if (idName.equals("rationId")) {
+                    idNo = checkByVoterId.getRationCardNumber();
+                } else if (idName.equals("bhulekhId")) {
+                    idNo = checkByVoterId.getBhulekhId();
                 }
+
+                voterIdList = FamilyListDTO.builder()
+                        .name(checkByVoterId.getFullName())
+                        .idNo(idNo)
+                        .address(checkByVoterId.getAddress())
+                        .familyId(checkByVoterId.getFamilyId())
+                        .build();
+
                 familyListDTOS.add(voterIdList);
             }
         } else {
@@ -445,32 +557,42 @@ public class UsersServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public IndividualListDTO getFamilyList(String idNo) throws NotFoundException {
-
         Users usersFamilyList = usersRepository.findUserByVoterId(idNo);
-        if (usersFamilyList != null) {
-            IndividualListDTO getUsersList = IndividualListDTO.builder()
-                    .familyId(usersFamilyList.getFamilyId())
-                    .fullName(usersFamilyList.getFullName())
-                    .address(usersFamilyList.getHouseNumber() + "," + usersFamilyList.getTehsilName() + "," + usersFamilyList.getDistrictName() + "," + usersFamilyList.getStateName())
-                    .dateOfBirth(usersFamilyList.getDateOfBirth())
-                    .voterId(usersFamilyList.getVoterId())
-                    .aadharNo(usersFamilyList.getAadharNo())
-                    .panCardNo(usersFamilyList.getPanCardNo())
-                    .mobileNumber(usersFamilyList.getMobileNumber())
-                    .govtSchemeEnrolled(usersFamilyList.getGovtSchemeEnrolled())
-                    .schemeCode(usersFamilyList.getSchemeCode())
-                    .employed(usersFamilyList.getEmployed())
-                    .employedCode(usersFamilyList.getEmployedCode())
-                    .epf_nps(usersFamilyList.getEpf_nps())
-                    .gramPanchayat(usersFamilyList.getGramPanchayat())
-                    .income(usersFamilyList.getIncome())
-                    .vmulyankana(usersFamilyList.getVmulyankana())
-                    .build();
-            return getUsersList;
-        } else {
-            throw new NotFoundException("Oops Not Data Found");
+        try {
+            if (usersFamilyList != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                IndividualListDTO getUsersList = IndividualListDTO.builder()
+                        .income(usersFamilyList.getIncome())
+                        .address(usersFamilyList.getAddress())
+                        .govtSchemeEnrolled(usersFamilyList.getGovtSchemeEnrolled())
+                        .mobileNumber(usersFamilyList.getMobileNumber())
+                        .rationCardNumber(usersFamilyList.getRationCardNumber())
+                        .fullName(usersFamilyList.getFullName())
+                        .displayDob(sdf.format(usersFamilyList.getDateOfBirth()))
+                        .aadharNo(usersFamilyList.getAadharNo())
+                        .vmulyankana(usersFamilyList.getVmulyankana())
+                        .employed(usersFamilyList.getEmployed())
+                        .gramPanchayat(usersFamilyList.getGramPanchayat())
+                        .manrekaRegNo(usersFamilyList.getManrekaRegNo())
+                        .familyId(usersFamilyList.getFamilyId())
+                        .bhulekhId(usersFamilyList.getBhulekhId())
+                        .epf_nps(usersFamilyList.getEpf_nps())
+                        .voterId(usersFamilyList.getVoterId())
+                        .panCardNo(usersFamilyList.getPanCardNo())
+                        .build();
+
+
+//                IndividualListDTO getUsersList = modelMapper.map(usersFamilyList, IndividualListDTO.class);
+                return getUsersList;
+            } else {
+                throw new NotFoundException("Oops Not Data Found");
+            }
+        } catch (NullPointerException e) {
+
         }
+        return null;
     }
+
 
     private Set<SimpleGrantedAuthority> getAuthority(Users user) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();

@@ -58,7 +58,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers("/admin/login", "/admin/insertUsers", "/admin/serveyorSignUp").permitAll()
-                .antMatchers("/admin/sendOtp", "/admin/verifyOtp").permitAll()
+                .antMatchers("/admin/familyLinkSendOtp", "/admin/familyLinkVerifyOtp", "/admin/serveyorVerifyOtp", "/admin/serveyorSendOtp").permitAll()
                 .antMatchers("/admin/unVerifiedMemberDetails", "/admin/getFamilyMemberDetails").permitAll()
                 .antMatchers("/dashboard/saveHeaderFilter", "/dashboard/getHeaderAgeFilter").permitAll()
                 .antMatchers("/dashboard/getHeaderGenderFilter", "/dashboard/saveBlockData").permitAll()
@@ -75,7 +75,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/groupData/getMulyankaList", "/groupData/getEmployedTypeList").permitAll()
                 .antMatchers("/admin/insertBulkUsers", "/dashboard/getStateDataFilter").permitAll()
                 .antMatchers("/serveyor/getEmployedType", "/serveyor/getGovtSchemes", "/serveyor/addFamilyMember").permitAll()
-                .antMatchers("/serveyor/editFamilyMember").permitAll()
+                .antMatchers("/serveyor/editFamilyMember", "/serveyor/getUnVerifiedMemberList").permitAll()
+                .antMatchers("/serveyor/serveyorUploadImage").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)

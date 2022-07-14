@@ -8,7 +8,7 @@ import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
 import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.service_impl.service.dashboard.*;
-import com.burwasolution.vishwakarma.service_impl.service.general.HeaderLabelService;
+import com.burwasolution.vishwakarma.service_impl.service.header.HeaderLabelService;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.GroupDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
