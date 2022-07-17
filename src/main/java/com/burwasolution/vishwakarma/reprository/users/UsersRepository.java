@@ -1,6 +1,8 @@
 package com.burwasolution.vishwakarma.reprository.users;
 
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -56,4 +58,6 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     List<Users> findByManrekaRegNo(String idNo);
     @Query("{$and:[{bhulekhId:{$ne:null}},{$or:[{bhulekhId:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
     List<Users> findByBhulekhId(String idNo);
+    @Query("{$and:[{'profileStatus':'PROFILE_NOT_COMPLETED'}]},limit?0s")
+    Page<Users> findAllByProfileStatus(PageRequest of);
 }

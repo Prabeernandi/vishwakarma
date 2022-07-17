@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -76,6 +77,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         if (employedName.endsWith(",")) {
             employedName = employedName.substring(0, employedName.length() - 1);
         }
+        employedName = employedName.replaceAll("null", "");
         return employedName;
     }
 
@@ -97,6 +99,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         if (schemeName.endsWith(",")) {
             schemeName = schemeName.substring(0, schemeName.length() - 1);
         }
+        schemeName = schemeName.replaceAll("null", "");
         return schemeName;
     }
 
@@ -202,16 +205,15 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         if (familyMember.getVoterId().trim() != null) {
 
             Users findUser = usersRepository.findUserByVoterId(familyMember.getVoterId());
-
+            employedName = schemeName = "";
             if (familyMember.getEmployed() != null && !familyMember.getEmployed().isEmpty()) {
                 employed(familyMember.getEmployed());
-            } else {
-                employedName = "";
             }
             if (familyMember.getGovtSchemeEnrolled() != null && !familyMember.getGovtSchemeEnrolled().isEmpty()) {
                 govtScheme(familyMember.getGovtSchemeEnrolled());
-                schemeName = "";
+
             }
+
 
             if (findUser != null) {
                 findUser.setAddress(familyMember.getAddress());
@@ -236,6 +238,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
                 findUser.setVmulyankana(familyMember.getVmulyankana());
                 findUser.setEpf_nps(familyMember.getEpf_nps());
                 findUser.setGramPanchayat(familyMember.getGramPanchayat());
+                findUser.setVerificationStatus(submittedForApproval.trim());
                 usersRepository.save(findUser);
                 IndividualListDTO mapper = modelMapper.map(findUser, IndividualListDTO.class);
 
@@ -243,7 +246,6 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             } else {
                 throw new NotFoundException("User Not Found");
             }
-
 
         } else {
             throw new NoSuchElementException("Please Check All the Parameters");
@@ -259,7 +261,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         } else {
             PageNo = PageNo - 1;
         }
-        Page<Users> usersPage = usersRepository.findAll(PageRequest.of(PageNo, pageSizeRequest));
+        Page<Users> usersPage = usersRepository.findAllByProfileStatus(PageRequest.of(PageNo, pageSizeRequest));
         List<FamilyListDTO> list = new ArrayList<>();
         FamilyListDTO usersList = new FamilyListDTO();
         for (Users usersData : usersPage) {
@@ -278,6 +280,8 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     public ImageUploadDTO serveyorUploadImage(String idName, String idNo, MultipartFile file) throws IOException {
         ImageUploadDTO uploadDTO = fileManagementService.uploadFile(idName, idNo, file);
         log.info("File " + uploadDTO.getFileName() + " Saved SuccessFully!!!");
+
+
         return uploadDTO;
     }
 
@@ -305,7 +309,8 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
             for (String secondList : removeComma) {
                 if (!getList.contains(secondList)) {
-                    getList.add(secondList);
+                    getList.add(secondList.trim());
+                    getList.removeAll(Collections.singleton(""));
                 }
             }
         }
@@ -335,12 +340,14 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             }
             finalList.add(firstList);
         }
+        finalList = employedRepository.findAll();
 
         return finalList;
     }
 
 
     @Override
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public List<GovtSchemes> getGovtSchemes() {
         List<Users> govtSchemesList = usersRepository.findAllByGovtSchemeEnrolled();
         String schemeCode = null;
@@ -352,6 +359,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
             if (!list.contains(arr.getGovtSchemeEnrolled())) {
                 list.add(arr.getGovtSchemeEnrolled());
+                getList.removeAll(Collections.singleton(""));
             }
 
         }
@@ -361,7 +369,8 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
             for (String secondList : removeComma) {
                 if (!getList.contains(secondList)) {
-                    getList.add(secondList);
+                    getList.add(secondList.trim());
+
                 }
             }
         }
@@ -384,7 +393,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             GovtSchemes firstList = GovtSchemes.builder()
                     .name(list5)
                     .schemeCode(schemeCode)
-                    .icon(icon)
+                    .icon(icon.trim())
                     .build();
             if (govtSchemesRepository.findBySchemeCode(schemeCode) != null) {
 
@@ -394,7 +403,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             finalList.add(firstList);
         }
 
-
+        finalList = govtSchemesRepository.findAll();
         return finalList;
     }
 

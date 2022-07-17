@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.domains.entity.basic;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Document(collection = "govtSchemes")
 public class GovtSchemes extends BaseObject {
 

@@ -4,6 +4,7 @@ import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
 import com.burwasolution.vishwakarma.domains.dto.users.ImageUploadDTO;
 import com.burwasolution.vishwakarma.domains.entity.basic.ImageUpload;
 import com.burwasolution.vishwakarma.reprository.users.ImageUploadRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
+@Slf4j
 public class FileManagementService implements ApplicationConstant {
 
     private ImageUploadRepository imageUploadRepository;
@@ -35,10 +37,12 @@ public class FileManagementService implements ApplicationConstant {
     private String fileUploadPath;
 
     public ImageUploadDTO uploadFile(String idName, String idNo, MultipartFile file) throws IOException {
-        fileName = idNo + "_" + file.getOriginalFilename().trim().toLowerCase().replaceAll(" ", "_");
-        Path path = Paths.get(fileUploadPath + File.separator + idName + File.separator + fileName);
+        fileName = idName + "_" + idNo + "_" + file.getOriginalFilename().trim();
+        fileName = fileName.toLowerCase().replaceAll(" ", "_");
+        Path path = Paths.get(serverUploadPath+"/uploads" + File.separator + File.separator + fileName);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        fileUrl = baseUrl + "/" + fileName;
+        fileUrl = baseUrl + "/uploads/" + fileName;
+        log.error("File Url "+baseUrl);
 
         ImageUpload uploadImage = ImageUpload.builder()
                 .fileName(file.getOriginalFilename())
@@ -49,6 +53,9 @@ public class FileManagementService implements ApplicationConstant {
                 .idName(idName)
                 .build();
         imageUploadRepository.save(uploadImage);
+
+//        ImageUploadDTO uploadDTO = new ImageUploadDTO();
+
         ImageUploadDTO imageUploadDTO = modelMapper.map(uploadImage, ImageUploadDTO.class);
         return imageUploadDTO;
     }

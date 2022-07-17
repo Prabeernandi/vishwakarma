@@ -27,6 +27,14 @@ public abstract class BaseObject {
     @LastModifiedBy
     private String modifiedUserId;
 
+    @JsonIgnore
+    public String getId() {
+        return id;
+    }
+    @JsonProperty
+    public void setId(String id) {
+        this.id = id;
+    }
 
     @JsonIgnore
     public boolean isDeleted() {

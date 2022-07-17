@@ -68,7 +68,7 @@ public class ServeyorController {
         Map<String, Object> getUnVerifiedMemberList = new HashMap<>();
         getUnVerifiedMemberList.put("status", HttpStatus.OK);
         getUnVerifiedMemberList.put("result", serveyorService.getUnVerifiedMemberList(pageNumber));
-        getUnVerifiedMemberList.put("message", "Govt Schemes List");
+        getUnVerifiedMemberList.put("message", "Un-Verified Members List");
         return new ResponseEntity<>(getUnVerifiedMemberList, HttpStatus.OK);
     }
 
@@ -77,7 +77,7 @@ public class ServeyorController {
         Map<String, Object> serveyorUploadImage = new HashMap<>();
         serveyorUploadImage.put("status", HttpStatus.OK);
         serveyorUploadImage.put("result", serveyorService.serveyorUploadImage(idName, idNo, file));
-        serveyorUploadImage.put("message", "Govt Schemes List");
+        serveyorUploadImage.put("message", "Image Upload SuccessFully");
         return new ResponseEntity<>(serveyorUploadImage, HttpStatus.OK);
     }
 

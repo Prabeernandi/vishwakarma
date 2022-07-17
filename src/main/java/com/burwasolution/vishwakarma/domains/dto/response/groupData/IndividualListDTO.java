@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.domains.dto.response.groupData;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,5 +34,7 @@ public class IndividualListDTO {
     private String gramPanchayat;
     private long income;
     private long vmulyankana;
+    private String verificationStatus;
+    private String profileStatus;
 
 }

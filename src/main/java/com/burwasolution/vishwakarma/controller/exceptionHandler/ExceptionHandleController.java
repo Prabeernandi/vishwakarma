@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -54,13 +53,13 @@ public class ExceptionHandleController implements ErrorController {
         Error errorMsg = new Error("Error", error.getMessage(), null);
         return new ResponseEntity<>(errorMsg, HttpStatus.OK);
     }
-
-    @ExceptionHandler(IOException.class)
-    private ResponseEntity<Error> handleIOException(IOException error) {
-        log.error(error.getMessage());
-        Error errorMsg = new Error("Error", error.getMessage(), null);
-        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
-    }
+//
+//    @ExceptionHandler(IOException.class)
+//    private ResponseEntity<Error> handleIOException(IOException error) {
+//        log.error(error.getMessage());
+//        Error errorMsg = new Error("Error", error.getCause().toString(), null);
+//        return new ResponseEntity<>(errorMsg, HttpStatus.BAD_REQUEST);
+//    }
 
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

@@ -37,7 +37,6 @@ public class Users extends BaseObject {
     private String bhulekhId;
     private String ageBar;
     private String familyHead;
-    private String motherName;
     private String stateName;
     private String districtName;
     private String tehsilName;
@@ -66,10 +65,9 @@ public class Users extends BaseObject {
     @JsonProperty
     private boolean hasRashanCard;
     private String rationCardNumber;
-    private String status;
-    private String areaType;
+    private String verificationStatus;
+    private String profileStatus;
     private int numberOfFamilyCounts;
-    private String memberId;
     private String govtSchemeEnrolled;
     private String uidNo;
     private String relationWithHof;
@@ -83,8 +81,14 @@ public class Users extends BaseObject {
     @JsonProperty
     private boolean hasPradhanMantriAwaasYojna;
     private String pmAwaasRegNo;
-    private String nregaJobCardNo;
     private String hasBiogasScheme;
+    private String voterPicId;
+    private String rationPicId;
+    private String manregaPicId;
+    private String bhulekhPicId;
+    private String aadharPicId;
+    private String panCardPicId;
+
 
     @LastModifiedDate
     private LocalDateTime authTokenCreationTime;

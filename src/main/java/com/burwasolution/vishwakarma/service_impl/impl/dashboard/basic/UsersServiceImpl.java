@@ -166,7 +166,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService, Applic
     @Async("threadPoolTaskExecutor")
     @Override
     public List<Users> insertBulkUsers(List<Users> users) {
-
+        Objects.toString(users, "");
         int count = 1;
         for (Users userlist : users) {
             String newPassword = bCryptPasswordEncoder.encode(userlist.getPassword());
@@ -541,7 +541,7 @@ public class UsersServiceImpl implements UserService, UserDetailsService, Applic
 
                 voterIdList = FamilyListDTO.builder()
                         .name(checkByVoterId.getFullName())
-                        .idNo(idNo)
+                        .idNo(checkByVoterId.getVoterId())
                         .address(checkByVoterId.getAddress())
                         .familyId(checkByVoterId.getFamilyId())
                         .build();
@@ -558,29 +558,37 @@ public class UsersServiceImpl implements UserService, UserDetailsService, Applic
     @Override
     public IndividualListDTO getFamilyList(String idNo) throws NotFoundException {
         Users usersFamilyList = usersRepository.findUserByVoterId(idNo);
+        List<IndividualListDTO> list = new ArrayList<>();
+
+        String dob = "";
         try {
             if (usersFamilyList != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                if (usersFamilyList.getDateOfBirth() != null) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    dob = sdf.format(usersFamilyList.getDateOfBirth());
+                }
+
                 IndividualListDTO getUsersList = IndividualListDTO.builder()
                         .income(usersFamilyList.getIncome())
-                        .address(usersFamilyList.getAddress())
-                        .govtSchemeEnrolled(usersFamilyList.getGovtSchemeEnrolled())
-                        .mobileNumber(usersFamilyList.getMobileNumber())
-                        .rationCardNumber(usersFamilyList.getRationCardNumber())
-                        .fullName(usersFamilyList.getFullName())
-                        .displayDob(sdf.format(usersFamilyList.getDateOfBirth()))
-                        .aadharNo(usersFamilyList.getAadharNo())
+                        .address(usersFamilyList.getAddress() == null ? "" : usersFamilyList.getAddress())
+                        .govtSchemeEnrolled(usersFamilyList.getGovtSchemeEnrolled() == null ? "" : usersFamilyList.getGovtSchemeEnrolled())
+                        .schemeCode(usersFamilyList.getSchemeCode() == null ? "" : usersFamilyList.getSchemeCode())
+                        .mobileNumber(usersFamilyList.getMobileNumber() == null ? "" : usersFamilyList.getMobileNumber())
+                        .rationCardNumber(usersFamilyList.getRationCardNumber() == null ? "" : usersFamilyList.getRationCardNumber())
+                        .fullName(usersFamilyList.getFullName() == null ? "" : usersFamilyList.getFullName())
+                        .displayDob(dob)
+                        .aadharNo(usersFamilyList.getAadharNo() == null ? "" : usersFamilyList.getAadharNo())
                         .vmulyankana(usersFamilyList.getVmulyankana())
-                        .employed(usersFamilyList.getEmployed())
-                        .gramPanchayat(usersFamilyList.getGramPanchayat())
-                        .manrekaRegNo(usersFamilyList.getManrekaRegNo())
-                        .familyId(usersFamilyList.getFamilyId())
-                        .bhulekhId(usersFamilyList.getBhulekhId())
-                        .epf_nps(usersFamilyList.getEpf_nps())
-                        .voterId(usersFamilyList.getVoterId())
-                        .panCardNo(usersFamilyList.getPanCardNo())
+                        .employed(usersFamilyList.getEmployed() == null ? "" : usersFamilyList.getEmployed())
+                        .employedCode(usersFamilyList.getEmployedCode() == null ? "" : usersFamilyList.getEmployedCode())
+                        .gramPanchayat(usersFamilyList.getGramPanchayat() == null ? "" : usersFamilyList.getGramPanchayat())
+                        .manrekaRegNo(usersFamilyList.getManrekaRegNo() == null ? "" : usersFamilyList.getManrekaRegNo())
+                        .familyId(usersFamilyList.getFamilyId() == null ? "" : usersFamilyList.getFamilyId())
+                        .bhulekhId(usersFamilyList.getBhulekhId() == null ? "" : usersFamilyList.getBhulekhId())
+                        .epf_nps(usersFamilyList.getEpf_nps() == null ? "" : usersFamilyList.getEpf_nps())
+                        .voterId(usersFamilyList.getVoterId() == null ? "" : usersFamilyList.getVoterId())
+                        .panCardNo(usersFamilyList.getPanCardNo() == null ? "" : usersFamilyList.getPanCardNo())
                         .build();
-
 
 //                IndividualListDTO getUsersList = modelMapper.map(usersFamilyList, IndividualListDTO.class);
                 return getUsersList;
