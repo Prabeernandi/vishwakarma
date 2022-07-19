@@ -27,10 +27,11 @@ public class IndividualMemberDTO {
     private String employed;
     private String income;
     private String vmulyankana;
-    private boolean hasRashanCard;
+    private String rationCardImgUrl;
     private boolean isManrekaEnabled;
-    private boolean isPMKisaanEnabled;
-    private boolean hasPradhanMantriAwaasYojna;
+    private String govtSchemeEnrolled;
+    private String pmAwaasImgUrl;
+    private String pmkissanImgUrl;
     private String voterId;
     private String aadharNo;
     private String panCardNo;

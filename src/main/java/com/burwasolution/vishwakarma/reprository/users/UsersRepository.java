@@ -60,4 +60,9 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     List<Users> findByBhulekhId(String idNo);
     @Query("{$and:[{'profileStatus':'PROFILE_NOT_COMPLETED'}]},limit?0s")
     Page<Users> findAllByProfileStatus(PageRequest of);
+    List<Users> findAllByStateCodeAndAgeBar(String stateCode, String ageBar);
+    List<Users> findAllByStateCodeAndAgeBarAndGender(String stateCode, String ageBar, String gender);
+    List<Users> findAllByStateCodeAndAgeBarAndGenderAndEmployedCode(String stateCode, String ageBar, String gender, String employedCode);
+    List<Users> findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(String stateCode, String ageBar, String gender, String employedCode, String schemeCode);
+    Users findAllByEmployedCode(String list3);
 }

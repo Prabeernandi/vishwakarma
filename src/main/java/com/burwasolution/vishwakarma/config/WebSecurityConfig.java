@@ -66,13 +66,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/dashboard/getBlockList", "/dashboard/getVillageList", "/dashboard/getCategoryList").permitAll()
                 .antMatchers("/dashboard/getHeaderEmployedFilter", "/dashboard/getHeaderGovtSchemesFilter").permitAll()
                 .antMatchers("/dashboard/getCardDataFilter", "/dashboard/getTableDataFilter").permitAll()
+                .antMatchers("/groupData/getEmployedTypeList","/groupData/getSchemeTypeList").permitAll()
                 .antMatchers("/dashboard/saveStateDetails", "/dashboard/saveDistrictData", "/dashboard/saveTehsilData",
                         "/dashboard/saveBlockData", "/dashboard/saveVillageData", "/dashboard/saveCategoryData").permitAll()
                 .antMatchers("/dashboard/getDistrictDataFilter", "/dashboard/getTehsilDataFilter", "/dashboard/getBlockDataFilter",
                         "/dashboard/getVillageDataFilter", "/dashboard/getcategoryDataFilter").permitAll()
                 .antMatchers("/groupData/getFamilyList", "/groupData/getFamilyDetails", "/groupData/getIndividualMemberDetails",
                         "/groupData/getSpecificEmployedTypeList", "/groupData/getGovtSchemesEnroleldList", "/groupData/getSpecificSchemesList",
-                        "/groupData/getMulyankaList", "/groupData/getEmployedTypeList").permitAll()
+                        "/groupData/getMulyankaList").permitAll()
                 .antMatchers("/admin/insertBulkUsers", "/dashboard/getStateDataFilter").permitAll()
                 .antMatchers("/serveyor/getEmployedType", "/serveyor/getGovtSchemes", "/serveyor/addFamilyMember").permitAll()
                 .antMatchers("/serveyor/editFamilyMember", "/serveyor/getUnVerifiedMemberList").permitAll()

@@ -20,5 +20,6 @@ public class ImageUpload extends BaseObject {
     private String familyId;
     private String fileCategory;
     private String idName;
+    private String idNo;
     private String uploadPath;
 }

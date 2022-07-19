@@ -3,15 +3,10 @@ package com.burwasolution.vishwakarma.service_impl.impl.groupData;
 import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
+import com.burwasolution.vishwakarma.domains.dto.users.GovtSchemesDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.ImageUploadDTO;
-import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
-import com.burwasolution.vishwakarma.domains.entity.basic.FamilyMembersDetails;
-import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
-import com.burwasolution.vishwakarma.domains.entity.basic.Users;
-import com.burwasolution.vishwakarma.reprository.users.EmployedRepository;
-import com.burwasolution.vishwakarma.reprository.users.GovtSchemesRepository;
-import com.burwasolution.vishwakarma.reprository.users.UnApprovedUsersRepository;
-import com.burwasolution.vishwakarma.reprository.users.UsersRepository;
+import com.burwasolution.vishwakarma.domains.entity.basic.*;
+import com.burwasolution.vishwakarma.reprository.users.*;
 import com.burwasolution.vishwakarma.service_impl.service.basic.FileManagementService;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.ServeyorService;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,18 +39,21 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     private final EmployedRepository employedRepository;
     private final ModelMapper modelMapper;
     private final FileManagementService fileManagementService;
+    private final ImageUploadRepository imageUploadRepository;
     String icon = null, employedName = null, schemeName = null;
 
 
     @Autowired
     public ServeyorServiceImpl(UsersRepository usersRepository, UnApprovedUsersRepository unApprovedUsersRepository
             , GovtSchemesRepository govtSchemesRepository, EmployedRepository employedRepository,
-                               ModelMapper modelMapper, FileManagementService fileManagementService) {
+                               ModelMapper modelMapper, FileManagementService fileManagementService,
+                               ImageUploadRepository imageUploadRepository) {
         this.usersRepository = usersRepository;
         this.unApprovedUsersRepository = unApprovedUsersRepository;
         this.govtSchemesRepository = govtSchemesRepository;
         this.employedRepository = employedRepository;
         this.modelMapper = modelMapper;
+        this.imageUploadRepository = imageUploadRepository;
         this.fileManagementService = fileManagementService;
     }
 
@@ -211,7 +209,6 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             }
             if (familyMember.getGovtSchemeEnrolled() != null && !familyMember.getGovtSchemeEnrolled().isEmpty()) {
                 govtScheme(familyMember.getGovtSchemeEnrolled());
-
             }
 
 
@@ -269,6 +266,8 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
                     .name(usersData.getFullName())
                     .address(usersData.getAddress())
                     .idNo(usersData.getVoterId())
+                    .verificationStatus(usersData.getVerificationStatus())
+                    .profileStatus(usersData.getProfileStatus())
                     .familyId(usersData.getFamilyId())
                     .build();
             list.add(usersList);
@@ -348,18 +347,35 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
     @Override
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public List<GovtSchemes> getGovtSchemes() {
+    public List<GovtSchemesDTO> getGovtSchemes(String schemeCode, String idNo, String schemeName) {
+        ImageUpload govtSchemesUrl = imageUploadRepository.findTopOneByIdNameAndIdNoOrderByIdDesc(schemeName, idNo);
+        String ractionImgUrl = "", PMKisaanId = "", PMAwaasId = "", imgUrl = "";
+        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("RC01")) {
+            ractionImgUrl = govtSchemesUrl.getUrl();
+            log.error(ractionImgUrl);
+        }
+        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("PMKisaanId")) {
+            PMKisaanId = govtSchemesUrl.getUrl();
+            log.error(PMKisaanId);
+        }
+        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("PMAwaasId")) {
+            PMAwaasId = govtSchemesUrl.getUrl();
+            log.error(PMAwaasId);
+        } else {
+            log.error("No Data");
+        }
         List<Users> govtSchemesList = usersRepository.findAllByGovtSchemeEnrolled();
-        String schemeCode = null;
+        String schemeCodes = null;
+        GovtSchemesDTO firstList2 = new GovtSchemesDTO();
         ArrayList<String> list = new ArrayList<>();
         ArrayList<String> getList = new ArrayList<>();
         List<GovtSchemes> finalList = new ArrayList<>();
+        List<GovtSchemesDTO> finalListDto = new ArrayList<>();
         for (Users arr : govtSchemesList) {
 
 
             if (!list.contains(arr.getGovtSchemeEnrolled())) {
                 list.add(arr.getGovtSchemeEnrolled());
-                getList.removeAll(Collections.singleton(""));
             }
 
         }
@@ -370,6 +386,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             for (String secondList : removeComma) {
                 if (!getList.contains(secondList)) {
                     getList.add(secondList.trim());
+                    getList.removeAll(Collections.singleton(""));
 
                 }
             }
@@ -378,33 +395,46 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
         for (String list5 : list4) {
             if (list5.equals("RationCard")) {
-                icon = baseUrl + "/icon/ic_ration_card.png";
-                schemeCode = "RC01";
+                icon = baseUrl + "icon/ic_ration_card.png";
+                imgUrl = ractionImgUrl;
+                schemeCodes = "RC01";
             }
             if (list5.equals("PMKisaanYojana")) {
-                icon = baseUrl + "/icon/ic_pm_kisan.png";
-                schemeCode = "RMKY01";
+                icon = baseUrl + "icon/ic_pm_kisan.png";
+                imgUrl = PMKisaanId;
+                schemeCodes = "RMKY01";
             }
             if (list5.equals("PMAwaasYojana")) {
-                icon = baseUrl + "/icon/ic_pm_yojana.png";
-                schemeCode = "PMAY01";
+                icon = baseUrl + "icon/ic_pm_yojana.png";
+                imgUrl = PMAwaasId;
+                schemeCodes = "PMAY01";
             }
 
             GovtSchemes firstList = GovtSchemes.builder()
                     .name(list5)
-                    .schemeCode(schemeCode)
+                    .schemeCode(schemeCodes)
+                    .imgUrl(imgUrl.trim())
                     .icon(icon.trim())
                     .build();
-            if (govtSchemesRepository.findBySchemeCode(schemeCode) != null) {
+            if (govtSchemesRepository.findBySchemeCode(schemeCodes) != null) {
+
+                firstList2 = GovtSchemesDTO.builder()
+                        .name(list5)
+                        .schemeCode(schemeCodes)
+                        .imgUrl(imgUrl.trim())
+                        .icon(icon.trim())
+                        .build();
+                log.error("" + firstList2);
 
             } else {
                 govtSchemesRepository.save(firstList);
             }
             finalList.add(firstList);
+            finalListDto.add(firstList2);
         }
 
         finalList = govtSchemesRepository.findAll();
-        return finalList;
+        return finalListDto;
     }
 
 

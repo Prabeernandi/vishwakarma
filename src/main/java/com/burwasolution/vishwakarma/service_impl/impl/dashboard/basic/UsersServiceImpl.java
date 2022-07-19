@@ -542,6 +542,8 @@ public class UsersServiceImpl implements UserService, UserDetailsService, Applic
                 voterIdList = FamilyListDTO.builder()
                         .name(checkByVoterId.getFullName())
                         .idNo(checkByVoterId.getVoterId())
+                        .verificationStatus(checkByVoterId.getVerificationStatus())
+                        .profileStatus(checkByVoterId.getProfileStatus())
                         .address(checkByVoterId.getAddress())
                         .familyId(checkByVoterId.getFamilyId())
                         .build();

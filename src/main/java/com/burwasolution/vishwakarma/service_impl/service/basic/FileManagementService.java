@@ -39,10 +39,10 @@ public class FileManagementService implements ApplicationConstant {
     public ImageUploadDTO uploadFile(String idName, String idNo, MultipartFile file) throws IOException {
         fileName = idName + "_" + idNo + "_" + file.getOriginalFilename().trim();
         fileName = fileName.toLowerCase().replaceAll(" ", "_");
-        Path path = Paths.get(serverUploadPath+"/uploads" + File.separator + File.separator + fileName);
+        Path path = Paths.get(serverUploadPath + File.separator + "uploads" + File.separator + File.separator + fileName);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-        fileUrl = baseUrl + "/uploads/" + fileName;
-        log.error("File Url "+baseUrl);
+        fileUrl = baseUrl + File.separator + "uploads" + File.separator + fileName;
+        log.error("File Url " + baseUrl);
 
         ImageUpload uploadImage = ImageUpload.builder()
                 .fileName(file.getOriginalFilename())
@@ -50,6 +50,7 @@ public class FileManagementService implements ApplicationConstant {
                 .fileType(file.getContentType())
                 .fileCategory(idName)
                 .url("" + fileUrl)
+                .idNo(idNo)
                 .idName(idName)
                 .build();
         imageUploadRepository.save(uploadImage);

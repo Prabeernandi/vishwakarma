@@ -45,6 +45,7 @@ public class Users extends BaseObject {
     private String districtCode;
     private String tehsilCode;
     private String blockCode;
+    private String blockName;
     private String villageCode;
     private int age;
     private String employed;

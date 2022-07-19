@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CardDataFilter {
 
+    private String name;
     private String stateCode;
     private String districtCode;
     private String tehsilCode;

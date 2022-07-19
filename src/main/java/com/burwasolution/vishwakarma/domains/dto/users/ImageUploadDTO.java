@@ -21,6 +21,7 @@ public class ImageUploadDTO {
     private String panCardId;
     private String fileName;
     private String url;
+    private String idNo;
     private String fileSize;
     private String fileType;
     private String familyId;

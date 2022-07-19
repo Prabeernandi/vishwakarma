@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.domains.dto.response.groupData;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployedType {
 
-    private String type1;
-    private String type2;
+    private String name;
+    private String employedCode;
+    private String stateCode;
+    private String districtCode;
+    private String tehsilCode;
+    private String blockCode;
+    private String villageCode;
+    private String categoryCode;
+    private String ageBar;
+    private String gender;
+    private String counts;
+    private String schemeCode;
+    private String vMulCode;
 }

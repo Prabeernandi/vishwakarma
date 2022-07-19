@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CardDataFilterDTO {
 
+    private String name;
     private String stateCode;
     private String districtCode;
     private String tehsilCode;
@@ -19,6 +20,7 @@ public class CardDataFilterDTO {
     private String categoryCode;
     private String ageBar;
     private String gender;
+    private String counts;
     private String employedCode;
     private String schemeCode;
     private String vMulCode;

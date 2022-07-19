@@ -1,5 +1,6 @@
 package com.burwasolution.vishwakarma.controller;
 
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
@@ -189,10 +190,11 @@ public class DashboardController {
         Map<String, Object> getTableDataFilter = new HashMap<>();
         getTableDataFilter.put("status", HttpStatus.OK);
         getTableDataFilter.put("result", groupDataService.findByTableDataFilter(tableDataFilter));
-        getTableDataFilter.put("message", "Card Data Filter List");
+        getTableDataFilter.put("message", "Table Data Filter List");
         return new ResponseEntity<>(getTableDataFilter, HttpStatus.OK);
 
     }
+
 
 
 }

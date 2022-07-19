@@ -20,6 +20,7 @@ public class TableDataFilter {
     private String villageCode;
     private String categoryCode;
     private String ageBar;
+    private String name;
     private String gender;
     private String employedCode;
     private String schemeCode;

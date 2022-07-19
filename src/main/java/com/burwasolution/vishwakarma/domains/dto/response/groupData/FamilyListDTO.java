@@ -27,5 +27,13 @@ public class FamilyListDTO {
     private String villageCode;
     private String category;
     private String idNo;
-
+    private String verificationStatus;
+    private String profileStatus;
+    private String categoryCode;
+    private String ageBar;
+    private String gender;
+    private String counts;
+    private String employedCode;
+    private String schemeCode;
+    private String vMulCode;
 }

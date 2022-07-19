@@ -55,10 +55,10 @@ public class ServeyorController {
 
 
     @GetMapping("/getGovtSchemes")
-    private ResponseEntity<?> getGovtSchemes() {
+    private ResponseEntity<?> getGovtSchemes(@RequestParam(required = false) String schemeCode, @RequestParam(required = false) String idNo,@RequestParam(required = false) String schemeName) {
         Map<String, Object> getGovtSchemes = new HashMap<>();
         getGovtSchemes.put("status", HttpStatus.OK);
-        getGovtSchemes.put("result", serveyorService.getGovtSchemes());
+        getGovtSchemes.put("result", serveyorService.getGovtSchemes(schemeCode, idNo,schemeName));
         getGovtSchemes.put("message", "Govt Schemes List");
         return new ResponseEntity<>(getGovtSchemes, HttpStatus.OK);
     }

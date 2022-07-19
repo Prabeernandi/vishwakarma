@@ -16,5 +16,5 @@ public class GovtSchemes extends BaseObject {
     private String name;
     private String schemeCode;
     private String icon;
-
+    private String imgUrl;
 }
