@@ -31,6 +31,7 @@ public abstract class BaseObject {
     public String getId() {
         return id;
     }
+
     @JsonProperty
     public void setId(String id) {
         this.id = id;
@@ -40,6 +41,7 @@ public abstract class BaseObject {
     public boolean isDeleted() {
         return deleted;
     }
+
     @JsonProperty
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
@@ -49,6 +51,7 @@ public abstract class BaseObject {
     public boolean isActive() {
         return isActive;
     }
+
     @JsonProperty
     public void setActive(boolean active) {
         isActive = active;
@@ -58,6 +61,7 @@ public abstract class BaseObject {
     public Date getCreatedDate() {
         return createdDate;
     }
+
     @JsonProperty
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
@@ -67,6 +71,7 @@ public abstract class BaseObject {
     public Date getUpdatedDate() {
         return updatedDate;
     }
+
     @JsonProperty
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
@@ -76,6 +81,7 @@ public abstract class BaseObject {
     public String getCreatedUserId() {
         return createdUserId;
     }
+
     @JsonProperty
     public void setCreatedUserId(String createdUserId) {
         this.createdUserId = createdUserId;
@@ -85,6 +91,7 @@ public abstract class BaseObject {
     public String getModifiedUserId() {
         return modifiedUserId;
     }
+
     @JsonProperty
     public void setModifiedUserId(String modifiedUserId) {
         this.modifiedUserId = modifiedUserId;

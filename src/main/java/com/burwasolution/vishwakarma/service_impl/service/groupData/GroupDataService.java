@@ -13,11 +13,19 @@ import java.util.List;
 
 public interface GroupDataService {
     List<FamilyListDTO> findFamilyList(CardDataFilterDTO cardDataFilter);
+
     List<IndividualMemberDTO> getFamilyMemberDetails(String familyId);
+
     IndividualMemberDTO getIndividualDetails(Users users);
+
     List<EmployedDetailsDTO> getListBySpecificEmployed(Users users);
+
     CardDataFilter findByCardDataFilter(CardDataFilterDTO cardDataFilter);
+
     List<TableDataFilter> findByTableDataFilter(TableDataFilter tableDataFilter);
+
     List<EmployedType> getListOfEmployedTypes(EmployedType employedType);
     List<EmployedType> getSchemeTypeList(EmployedType cardDataFilter);
+    List<FamilyListDTO> getFamilyList(CardDataFilterDTO cardDataFilter);
+    List<Users> getListOfCounts(EmployedType employedType);
 }

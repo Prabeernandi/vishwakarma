@@ -1,6 +1,7 @@
 package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
+import com.burwasolution.vishwakarma.domains.dto.users.Validation;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.ServeyorService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +56,10 @@ public class ServeyorController {
 
 
     @GetMapping("/getGovtSchemes")
-    private ResponseEntity<?> getGovtSchemes(@RequestParam(required = false) String schemeCode, @RequestParam(required = false) String idNo,@RequestParam(required = false) String schemeName) {
+    private ResponseEntity<?> getGovtSchemes(@RequestParam(required = false) String schemeCode, @RequestParam(required = false) String idNo, @RequestParam(required = false) String schemeName) {
         Map<String, Object> getGovtSchemes = new HashMap<>();
         getGovtSchemes.put("status", HttpStatus.OK);
-        getGovtSchemes.put("result", serveyorService.getGovtSchemes(schemeCode, idNo,schemeName));
+        getGovtSchemes.put("result", serveyorService.getGovtSchemes(schemeCode, idNo, schemeName));
         getGovtSchemes.put("message", "Govt Schemes List");
         return new ResponseEntity<>(getGovtSchemes, HttpStatus.OK);
     }
@@ -72,6 +73,7 @@ public class ServeyorController {
         return new ResponseEntity<>(getUnVerifiedMemberList, HttpStatus.OK);
     }
 
+
     @PostMapping("/serveyorUploadImage")
     private ResponseEntity<?> serveyorUploadImage(String idName, String idNo, MultipartFile file) throws IOException {
         Map<String, Object> serveyorUploadImage = new HashMap<>();
@@ -80,5 +82,26 @@ public class ServeyorController {
         serveyorUploadImage.put("message", "Image Upload SuccessFully");
         return new ResponseEntity<>(serveyorUploadImage, HttpStatus.OK);
     }
+
+    @GetMapping("/getFamilyList")
+    private ResponseEntity<?> getFamilyList(String familyId) {
+        Map<String, Object> getFamilyList = new HashMap<>();
+        getFamilyList.put("status", HttpStatus.OK);
+        getFamilyList.put("result", serveyorService.getFamilyList(familyId));
+        getFamilyList.put("message", "List of families");
+        return new ResponseEntity<>(getFamilyList, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/getValidationStatus")
+    private ResponseEntity<?> getValidationStatus(@RequestBody Validation validation) {
+        Map<String, Object> getValidationStatus = new HashMap<>();
+        getValidationStatus.put("status", HttpStatus.OK);
+        getValidationStatus.put("result", serveyorService.getValidationStatus(validation));
+        getValidationStatus.put("message", "Completed Records Counts");
+        return new ResponseEntity<>(getValidationStatus, HttpStatus.OK);
+    }
+
+
 
 }

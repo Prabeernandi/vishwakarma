@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.controller;
 
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Age;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.Gender;
@@ -9,8 +8,8 @@ import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
 import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
 import com.burwasolution.vishwakarma.reprository.location.StateRepository;
 import com.burwasolution.vishwakarma.service_impl.service.dashboard.*;
-import com.burwasolution.vishwakarma.service_impl.service.header.HeaderLabelService;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.GroupDataService;
+import com.burwasolution.vishwakarma.service_impl.service.header.HeaderLabelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -194,7 +193,6 @@ public class DashboardController {
         return new ResponseEntity<>(getTableDataFilter, HttpStatus.OK);
 
     }
-
 
 
 }

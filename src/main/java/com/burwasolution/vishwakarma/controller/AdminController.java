@@ -3,7 +3,6 @@ package com.burwasolution.vishwakarma.controller;
 import com.burwasolution.vishwakarma.domains.dto.users.LoginUser;
 import com.burwasolution.vishwakarma.domains.dto.users.ServeyorSignUpDTO;
 import com.burwasolution.vishwakarma.domains.entity.basic.Otp;
-import com.burwasolution.vishwakarma.domains.entity.basic.Serveyor;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
 import com.burwasolution.vishwakarma.service_impl.service.basic.UserService;
 import javassist.NotFoundException;
@@ -91,7 +90,7 @@ public class AdminController {
     private ResponseEntity<?> unVerifyDetails(@RequestParam String idName, @RequestParam String idNo) throws NotFoundException {
         Map<String, Object> unVerifyDetails = new HashMap<>();
         unVerifyDetails.put("status", HttpStatus.OK);
-        unVerifyDetails.put("result", userService.unVerifyDetails(idName,idNo));
+        unVerifyDetails.put("result", userService.unVerifyDetails(idName, idNo));
         unVerifyDetails.put("message", "UnVerified Family List");
         return new ResponseEntity<>(unVerifyDetails, HttpStatus.OK);
     }
@@ -109,7 +108,6 @@ public class AdminController {
     private List<Users> insertBulkUsers(@RequestBody List<Users> users) {
         return userService.insertBulkUsers(users);
     }
-
 
 
 }

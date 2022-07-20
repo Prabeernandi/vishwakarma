@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/dashboard/getBlockList", "/dashboard/getVillageList", "/dashboard/getCategoryList").permitAll()
                 .antMatchers("/dashboard/getHeaderEmployedFilter", "/dashboard/getHeaderGovtSchemesFilter").permitAll()
                 .antMatchers("/dashboard/getCardDataFilter", "/dashboard/getTableDataFilter").permitAll()
-                .antMatchers("/groupData/getEmployedTypeList","/groupData/getSchemeTypeList").permitAll()
+                .antMatchers("/groupData/getEmployedTypeList", "/groupData/getSchemeTypeList").permitAll()
                 .antMatchers("/dashboard/saveStateDetails", "/dashboard/saveDistrictData", "/dashboard/saveTehsilData",
                         "/dashboard/saveBlockData", "/dashboard/saveVillageData", "/dashboard/saveCategoryData").permitAll()
                 .antMatchers("/dashboard/getDistrictDataFilter", "/dashboard/getTehsilDataFilter", "/dashboard/getBlockDataFilter",
@@ -77,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/insertBulkUsers", "/dashboard/getStateDataFilter").permitAll()
                 .antMatchers("/serveyor/getEmployedType", "/serveyor/getGovtSchemes", "/serveyor/addFamilyMember").permitAll()
                 .antMatchers("/serveyor/editFamilyMember", "/serveyor/getUnVerifiedMemberList").permitAll()
-                .antMatchers("/serveyor/serveyorUploadImage").permitAll()
+                .antMatchers("/serveyor/serveyorUploadImage", "/serveyor/getFamilyList").permitAll()
+                .antMatchers("/serveyor/getValidationStatus","/serveyor/getValidationPendingRecords").permitAll()
                 .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)

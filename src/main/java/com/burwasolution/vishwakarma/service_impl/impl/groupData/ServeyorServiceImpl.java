@@ -1,11 +1,17 @@
 package com.burwasolution.vishwakarma.service_impl.impl.groupData;
 
 import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.GovtSchemesDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.ImageUploadDTO;
-import com.burwasolution.vishwakarma.domains.entity.basic.*;
+import com.burwasolution.vishwakarma.domains.dto.users.Validation;
+import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
+import com.burwasolution.vishwakarma.domains.entity.basic.FamilyMembersDetails;
+import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
+import com.burwasolution.vishwakarma.domains.entity.basic.Users;
+import com.burwasolution.vishwakarma.domains.entity.headerFilter.CardDataFilter;
 import com.burwasolution.vishwakarma.reprository.users.*;
 import com.burwasolution.vishwakarma.service_impl.service.basic.FileManagementService;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.ServeyorService;
@@ -18,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +49,10 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     private final ImageUploadRepository imageUploadRepository;
     String icon = null, employedName = null, schemeName = null;
 
+    String stateCode = null, districtCode = null, tehsilCode = null, blockCode = null,
+            villageCode = null, category = null, ageBar = null, gender = null,
+            employedCode = null, schemeCode = null, name = null;
+    List<Users> usersList = new ArrayList<>();
 
     @Autowired
     public ServeyorServiceImpl(UsersRepository usersRepository, UnApprovedUsersRepository unApprovedUsersRepository
@@ -55,6 +66,101 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         this.modelMapper = modelMapper;
         this.imageUploadRepository = imageUploadRepository;
         this.fileManagementService = fileManagementService;
+    }
+
+
+    public List<Users> getFilteredData(EmployedType cardDataFilter) {
+
+        stateCode = cardDataFilter.getStateCode();
+        districtCode = cardDataFilter.getDistrictCode();
+        tehsilCode = cardDataFilter.getTehsilCode();
+        blockCode = cardDataFilter.getBlockCode();
+        villageCode = cardDataFilter.getVillageCode();
+        category = cardDataFilter.getCategoryCode();
+        ageBar = cardDataFilter.getAgeBar();
+        gender = cardDataFilter.getGender();
+        employedCode = cardDataFilter.getEmployedCode();
+        schemeCode = cardDataFilter.getSchemeCode();
+        CardDataFilter cardDataFilter2 = new CardDataFilter();
+        List<CardDataFilter> cardDataFilterList = new ArrayList<>();
+
+        if (stateCode != null) {
+
+            if (villageCode != null) {
+
+                usersList = usersRepository.findAllBy(villageCode, ageBar, gender, employedCode, schemeCode);
+
+
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
+                    log.error("size " + usersList.size());
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, ageBar, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByVillageCode(villageCode);
+                }
+
+            } else if (blockCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBar(blockCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGender(blockCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCode(blockCode, ageBar, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByBlockCode(blockCode);
+                }
+            } else if (tehsilCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBar(tehsilCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGender(tehsilCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, ageBar, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(tehsilCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByTehsilCode(tehsilCode);
+                }
+
+            } else if (districtCode != null) {
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBar(districtCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGender(districtCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, ageBar, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(districtCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByDistrictCode(districtCode);
+                }
+            } else {
+
+                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByStateCodeAndAgeBar(stateCode, ageBar);
+                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGender(stateCode, ageBar, gender);
+                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGenderAndEmployedCode(stateCode, ageBar, gender, employedCode);
+                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(stateCode, ageBar, gender, employedCode, schemeCode);
+                } else {
+                    usersList = usersRepository.findAllByStateCode(stateCode);
+                }
+            }
+
+
+        } else {
+            throw new HttpMessageNotReadableException(cardDataFilter.getStateCode());
+        }
+        return usersList;
     }
 
     public String employed(String employedCode) {
@@ -284,6 +390,109 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         return uploadDTO;
     }
 
+    @Override
+    public List<FamilyListDTO> getFamilyList(String familyId) {
+
+        List<Users> findFamilyMembers = usersRepository.findAllByFamilyIdAndVerificationStatus(familyId, verifyPending);
+        List<FamilyListDTO> memberList = new ArrayList<>();
+        for (Users getMembers : findFamilyMembers) {
+            FamilyListDTO members = FamilyListDTO.builder()
+                    .name(getMembers.getFullName())
+                    .address(getMembers.getAddress())
+                    .idNo(getMembers.getVoterId())
+                    .verificationStatus(getMembers.getVerificationStatus())
+                    .profileStatus(getMembers.getProfileStatus())
+                    .familyId(getMembers.getFamilyId())
+                    .build();
+            memberList.add(members);
+        }
+
+        return memberList;
+    }
+
+
+    public List<Users> locationFilter(Validation validation) {
+
+        stateCode = validation.getStateCode();
+        districtCode = validation.getDistrictCode();
+        tehsilCode = validation.getTehsilCode();
+        blockCode = validation.getBlockCode();
+        villageCode = validation.getVillageCode();
+
+        if (stateCode != null) {
+            if (villageCode != null) {
+                usersList = usersRepository.findByVillageCode(villageCode);
+            } else if (blockCode != null) {
+                usersList = usersRepository.findAllByBlockCode(blockCode);
+            } else if (tehsilCode != null) {
+                usersList = usersRepository.findAllByTehsilCode(tehsilCode);
+            } else if (districtCode != null) {
+                usersList = usersRepository.findAllByDistrictCode(districtCode);
+            } else {
+                usersList = usersRepository.findAllByStateCode(stateCode);
+            }
+
+        } else {
+            throw new HttpMessageNotReadableException(validation.getStateCode());
+        }
+
+        return usersList;
+    }
+
+
+    public long getCompletedProfileCounts(List<Users> users) {
+
+        users = usersRepository.findAllByVerificationStatusAndProfileStatus(approvedByAdmins, profileCompleted);
+        users.stream();
+        long counts = users.size();
+        return counts;
+    }
+
+    public long getValidationPendingCounts(List<Users> users) {
+
+        users = usersRepository.findAllByVerificationStatusAndProfileStatus(verifyPending, profileNotCompleted);
+        users.stream();
+        long counts = users.size();
+        return counts;
+    }
+
+    public long getApprovalPendingCounts(List<Users> users) {
+
+        users = usersRepository.findAllByVerificationStatusAndProfileStatus(submittedForApproval, profileNotCompleted);
+        users.stream();
+        long counts = users.size();
+        return counts;
+    }
+
+    public long getApprovalCompletedCounts(List<Users> users) {
+
+        users = usersRepository.findAllByVerificationStatus(approvedByAdmins);
+        users.stream();
+        long counts = users.size();
+        return counts;
+    }
+
+
+    @Override
+    public Validation getValidationStatus(Validation validation) {
+        usersList = locationFilter(validation);
+
+        Validation showDetails = Validation.builder()
+                .stateCode(validation.getStateCode())
+                .districtCode(validation.getDistrictCode())
+                .tehsilCode(validation.getTehsilCode())
+                .blockCode(validation.getBlockCode())
+                .villageCode(validation.getVillageCode())
+                .categoryCode(validation.getCategoryCode())
+                .completedRecords(getCompletedProfileCounts(usersList))
+                .validationPending(getValidationPendingCounts(usersList))
+                .approvalPending(getApprovalPendingCounts(usersList))
+                .approved(getApprovalCompletedCounts(usersList))
+                .build();
+
+        return showDetails;
+
+    }
 
     @Override
     public List<Employed> getEmployedType() {
@@ -348,22 +557,9 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     @Override
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public List<GovtSchemesDTO> getGovtSchemes(String schemeCode, String idNo, String schemeName) {
-        ImageUpload govtSchemesUrl = imageUploadRepository.findTopOneByIdNameAndIdNoOrderByIdDesc(schemeName, idNo);
+//        ImageUpload govtSchemesUrl = imageUploadRepository.findTopOneByIdNameAndIdNoOrderByIdDesc(schemeName, idNo);
         String ractionImgUrl = "", PMKisaanId = "", PMAwaasId = "", imgUrl = "";
-        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("RC01")) {
-            ractionImgUrl = govtSchemesUrl.getUrl();
-            log.error(ractionImgUrl);
-        }
-        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("PMKisaanId")) {
-            PMKisaanId = govtSchemesUrl.getUrl();
-            log.error(PMKisaanId);
-        }
-        if (govtSchemesUrl != null && govtSchemesUrl.getIdName().equals("PMAwaasId")) {
-            PMAwaasId = govtSchemesUrl.getUrl();
-            log.error(PMAwaasId);
-        } else {
-            log.error("No Data");
-        }
+
         List<Users> govtSchemesList = usersRepository.findAllByGovtSchemeEnrolled();
         String schemeCodes = null;
         GovtSchemesDTO firstList2 = new GovtSchemesDTO();
@@ -396,24 +592,23 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
         for (String list5 : list4) {
             if (list5.equals("RationCard")) {
                 icon = baseUrl + "icon/ic_ration_card.png";
-                imgUrl = ractionImgUrl;
+
                 schemeCodes = "RC01";
             }
             if (list5.equals("PMKisaanYojana")) {
                 icon = baseUrl + "icon/ic_pm_kisan.png";
-                imgUrl = PMKisaanId;
+
                 schemeCodes = "RMKY01";
             }
             if (list5.equals("PMAwaasYojana")) {
                 icon = baseUrl + "icon/ic_pm_yojana.png";
-                imgUrl = PMAwaasId;
+
                 schemeCodes = "PMAY01";
             }
 
             GovtSchemes firstList = GovtSchemes.builder()
                     .name(list5)
                     .schemeCode(schemeCodes)
-                    .imgUrl(imgUrl.trim())
                     .icon(icon.trim())
                     .build();
             if (govtSchemesRepository.findBySchemeCode(schemeCodes) != null) {
@@ -421,7 +616,6 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
                 firstList2 = GovtSchemesDTO.builder()
                         .name(list5)
                         .schemeCode(schemeCodes)
-                        .imgUrl(imgUrl.trim())
                         .icon(icon.trim())
                         .build();
                 log.error("" + firstList2);

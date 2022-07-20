@@ -36,7 +36,7 @@ public class Serveyor extends BaseObject {
 
 
     private enum gender {
-        male, female;
+        male, female
     }
 
 }

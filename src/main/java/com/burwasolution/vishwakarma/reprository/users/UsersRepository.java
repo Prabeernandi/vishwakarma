@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public interface UsersRepository extends MongoRepository<Users, String> {
@@ -15,9 +16,12 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     Users getUserByUsername(String username);
     Users findUserByUsername(String username);
     Users findByStateCode(String stateCode);
+    @Query("{'familyId':?0}")
+    Stream<Users> findAllByFamilyIds(String list3);
+    @Query("{'familyId':?0}")
     List<Users> findAllByFamilyId(String list3);
     List<Users> findByVillageCode(String id);
-    @Query("{$and:[{voterId:{$ne:null}},{$or:[{voterId:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
+    @Query("{$and:[{'verificationStatus':'VERIFICATION_PENDING'},{'profileStatus':'PROFILE_NOT_COMPLETED'},{voterId:{$ne:null}},{$or:[{voterId:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
     List<Users> findByVoterIdAndFullName(String idNo);
     Users findUserByVoterId(String idNo);
     Users findUserByVoterIdAndFamilyId(String voterId, String familyId);
@@ -52,17 +56,21 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     List<Users> findAllByBlockCodeAndAgeBarAndGender(String blockCode, String ageBar, String gender);
     List<Users> findAllByBlockCodeAndAgeBarAndGenderAndEmployedCode(String blockCode, String ageBar, String gender, String employedCode);
     List<Users> findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(String blockCode, String ageBar, String gender, String employedCode, String schemeCode);
-    @Query("{$and:[{rationCardNumber:{$ne:null}},{$or:[{rationCardNumber:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
+    @Query("{$and:[{'verificationStatus':'VERIFICATION_PENDING'},{'profileStatus':'PROFILE_NOT_COMPLETED'},{rationCardNumber:{$ne:null}},{$or:[{rationCardNumber:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
     List<Users> findByRationCardNumber(String idNo);
-    @Query("{$and:[{manrekaRegNo:{$ne:null}},{$or:[{manrekaRegNo:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
+    @Query("{$and:[{'verificationStatus':'VERIFICATION_PENDING'},{'profileStatus':'PROFILE_NOT_COMPLETED'},{manrekaRegNo:{$ne:null}},{$or:[{manrekaRegNo:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
     List<Users> findByManrekaRegNo(String idNo);
     @Query("{$and:[{bhulekhId:{$ne:null}},{$or:[{bhulekhId:{$regex:?0}},{fullName:{$regex:?0}}]}]}")
     List<Users> findByBhulekhId(String idNo);
-    @Query("{$and:[{'profileStatus':'PROFILE_NOT_COMPLETED'}]},limit?0s")
+    @Query("{$and:[{'verificationStatus':'VERIFICATION_PENDING'},{'profileStatus':'PROFILE_NOT_COMPLETED'},{'verificationStatus':'VERIFICATION_PENDING'},{'profileStatus':'PROFILE_NOT_COMPLETED'}]},limit?0")
     Page<Users> findAllByProfileStatus(PageRequest of);
     List<Users> findAllByStateCodeAndAgeBar(String stateCode, String ageBar);
     List<Users> findAllByStateCodeAndAgeBarAndGender(String stateCode, String ageBar, String gender);
     List<Users> findAllByStateCodeAndAgeBarAndGenderAndEmployedCode(String stateCode, String ageBar, String gender, String employedCode);
     List<Users> findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(String stateCode, String ageBar, String gender, String employedCode, String schemeCode);
     Users findAllByEmployedCode(String list3);
+    List<Users> findAllByFamilyIdAndVerificationStatus(String familyId, String verifyPending);
+    List<Users> findAllBy(String villageCode, String ageBar, String gender, String employedCode, String schemeCode);
+    List<Users> findAllByVerificationStatusAndProfileStatus(String approvedByAdmins, String profileCompleted);
+    List<Users> findAllByVerificationStatus(String approvedByAdmins);
 }

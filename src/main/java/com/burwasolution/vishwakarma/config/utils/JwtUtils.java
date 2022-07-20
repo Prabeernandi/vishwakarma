@@ -1,6 +1,5 @@
 package com.burwasolution.vishwakarma.config.utils;
 
-import com.burwasolution.vishwakarma.config.utils.Constants;
 import io.jsonwebtoken.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

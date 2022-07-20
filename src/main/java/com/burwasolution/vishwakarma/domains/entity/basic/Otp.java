@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Document(collection = "otp")
-public class Otp extends BaseObject{
+public class Otp extends BaseObject {
 
     private String otpType;
     private String otp;

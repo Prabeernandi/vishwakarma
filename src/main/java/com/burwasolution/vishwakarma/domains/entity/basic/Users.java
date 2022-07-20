@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
@@ -51,6 +52,7 @@ public class Users extends BaseObject {
     private String employed;
     private long income;
     private long vmulyankana;
+    @Indexed
     private String voterId;
     private String houseNumber;
     private String caste;
