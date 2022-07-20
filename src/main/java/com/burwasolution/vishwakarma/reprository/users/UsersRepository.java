@@ -70,7 +70,84 @@ public interface UsersRepository extends MongoRepository<Users, String> {
     List<Users> findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(String stateCode, String ageBar, String gender, String employedCode, String schemeCode);
     Users findAllByEmployedCode(String list3);
     List<Users> findAllByFamilyIdAndVerificationStatus(String familyId, String verifyPending);
-    List<Users> findAllBy(String villageCode, String ageBar, String gender, String employedCode, String schemeCode);
+    @Query("{$or:[{villageCode:?0},{ageBar:?1},{gender:?02}]}")
+    List<Users> findAllBy(String villageCode, String ageBar,String gender);
     List<Users> findAllByVerificationStatusAndProfileStatus(String approvedByAdmins, String profileCompleted);
     List<Users> findAllByVerificationStatus(String approvedByAdmins);
+    Stream<Users> findAllBySchemeCodeNot(boolean equals);
+    List<Users> findAllByVillageCodeAndGenderAndEmployedCode(String villageCode, String gender, String employedCode);
+    List<Users> findAllByVillageCodeAndGenderAndSchemeCode(String villageCode, String gender, String schemeCode);
+    List<Users> findAllByVillageCodeAndSchemeCodeAndEmployedCode(String villageCode, String schemeCode, String employedCode);
+
+    List<Users> findAllByVillageCodeAndGender(String villageCode, String gender);
+
+    List<Users> findAllByVillageCodeAndSchemeCode(String villageCode, String schemeCode);
+
+    List<Users> findAllByVillageCodeAndEmployedCode(String villageCode, String employedCode);
+
+    List<Users> findAllByVillageCodeAndAgeBarAndSchemeCode(String villageCode, String ageBar, String schemeCode);
+
+    List<Users> findAllByBlockCodeAndEmployedCode(String blockCode, String employedCode);
+
+    List<Users> findAllByBlockCodeAndSchemeCode(String blockCode, String schemeCode);
+
+    List<Users> findAllByBlockCodeAndGender(String blockCode, String gender);
+
+    List<Users> findAllByBlockCodeAndSchemeCodeAndEmployedCode(String blockCode, String schemeCode, String employedCode);
+
+    List<Users> findAllByBlockCodeAndGenderAndSchemeCode(String blockCode, String gender, String schemeCode);
+
+    List<Users> findAllByBlockCodeAndGenderAndEmployedCode(String blockCode, String gender, String employedCode);
+
+    List<Users> findAllByBlockCodeAndAgeBarAndEmployedCode(String blockCode, String ageBar, String employedCode);
+
+    List<Users> findAllByBlockCodeAndAgeBarAndSchemeCode(String blockCode, String ageBar, String schemeCode);
+
+    List<Users> findAllByTehsilCodeAndEmployedCode(String tehsilCode, String employedCode);
+
+    List<Users> findAllByTehsilCodeAndSchemeCode(String tehsilCode, String schemeCode);
+
+    List<Users> findAllByTehsilCodeAndGender(String tehsilCode, String gender);
+
+    List<Users> findAllByTehsilCodeAndSchemeCodeAndEmployedCode(String tehsilCode, String schemeCode, String employedCode);
+
+    List<Users> findAllByTehsilCodeAndGenderAndSchemeCode(String tehsilCode, String gender, String schemeCode);
+
+    List<Users> findAllByTehsilCodeAndGenderAndEmployedCode(String tehsilCode, String gender, String employedCode);
+
+    List<Users> findAllByTehsilCodeAndAgeBarAndEmployedCode(String tehsilCode, String ageBar, String employedCode);
+
+    List<Users> findAllByTehsilCodeAndAgeBarAndSchemeCode(String tehsilCode, String ageBar, String schemeCode);
+
+    List<Users> findAllByDistrictCodeAndAgeBarAndEmployedCode(String districtCode, String ageBar, String employedCode);
+
+    List<Users> findAllByDistrictCodeAndGenderAndSchemeCode(String districtCode, String gender, String schemeCode);
+
+    List<Users> findAllByDistrictCodeAndSchemeCodeAndEmployedCode(String districtCode, String schemeCode, String employedCode);
+
+    List<Users> findAllByDistrictCodeAndAgeBarAndSchemeCode(String districtCode, String ageBar, String schemeCode);
+
+    List<Users> findAllByDistrictCodeAndGenderAndEmployedCode(String districtCode, String gender, String employedCode);
+
+    List<Users> findAllByDistrictCodeAndGender(String districtCode, String gender);
+
+    List<Users> findAllByDistrictCodeAndSchemeCode(String districtCode, String schemeCode);
+
+    List<Users> findAllByDistrictCodeAndEmployedCode(String districtCode, String employedCode);
+
+    List<Users> findAllByStateCodeAndAgeBarAndEmployedCode(String stateCode, String ageBar, String employedCode);
+
+    List<Users> findAllByStateCodeAndSchemeCodeAndEmployedCode(String stateCode, String schemeCode, String employedCode);
+
+    List<Users> findAllByStateCodeAndAgeBarAndSchemeCode(String stateCode, String ageBar, String schemeCode);
+
+    List<Users> findAllByStateCodeAndGenderAndSchemeCode(String stateCode, String gender, String schemeCode);
+
+    List<Users> findAllByStateCodeAndGenderAndEmployedCode(String stateCode, String gender, String employedCode);
+
+    List<Users> findAllByStateCodeAndGender(String stateCode, String gender);
+
+    List<Users> findAllByStateCodeAndSchemeCode(String stateCode, String schemeCode);
+
+    List<Users> findAllByStateCodeAndEmployedCode(String stateCode, String employedCode);
 }

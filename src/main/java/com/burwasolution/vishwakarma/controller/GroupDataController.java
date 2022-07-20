@@ -1,7 +1,7 @@
 package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedDetailsDTO;
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.DashboardUserDetails;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualMemberDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
 import com.burwasolution.vishwakarma.domains.entity.basic.Users;
@@ -59,7 +59,7 @@ public class GroupDataController {
 
 
     @PostMapping("/getEmployedTypeList")
-    private ResponseEntity<?> getEmployedTypeList(@RequestBody EmployedType cardDataFilter) throws Exception {
+    private ResponseEntity<?> getEmployedTypeList(@RequestBody DashboardUserDetails cardDataFilter) throws Exception {
         Map<String, Object> getEmployedTypeList = new HashMap<>();
         getEmployedTypeList.put("status", HttpStatus.OK);
         getEmployedTypeList.put("result", groupDataService.getListOfEmployedTypes(cardDataFilter));
@@ -68,7 +68,7 @@ public class GroupDataController {
     }
 
     @PostMapping("/getSchemeTypeList")
-    private ResponseEntity<?> getSchemeTypeList(@RequestBody EmployedType cardDataFilter) {
+    private ResponseEntity<?> getSchemeTypeList(@RequestBody DashboardUserDetails cardDataFilter) {
         Map<String, Object> getSchemeTypeList = new HashMap<>();
         getSchemeTypeList.put("status", HttpStatus.OK);
         getSchemeTypeList.put("result", groupDataService.getSchemeTypeList(cardDataFilter));

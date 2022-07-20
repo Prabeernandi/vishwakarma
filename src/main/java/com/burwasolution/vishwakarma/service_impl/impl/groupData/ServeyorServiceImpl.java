@@ -1,12 +1,13 @@
 package com.burwasolution.vishwakarma.service_impl.impl.groupData;
 
 import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.DashboardUserDetails;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.GovtSchemesDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.ImageUploadDTO;
-import com.burwasolution.vishwakarma.domains.dto.users.Validation;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationCounts;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationUsersDetails;
 import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
 import com.burwasolution.vishwakarma.domains.entity.basic.FamilyMembersDetails;
 import com.burwasolution.vishwakarma.domains.entity.basic.GovtSchemes;
@@ -49,6 +50,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     private final ImageUploadRepository imageUploadRepository;
     String icon = null, employedName = null, schemeName = null;
 
+
     String stateCode = null, districtCode = null, tehsilCode = null, blockCode = null,
             villageCode = null, category = null, ageBar = null, gender = null,
             employedCode = null, schemeCode = null, name = null;
@@ -69,7 +71,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     }
 
 
-    public List<Users> getFilteredData(EmployedType cardDataFilter) {
+    public List<Users> getFilteredData(DashboardUserDetails cardDataFilter) {
 
         stateCode = cardDataFilter.getStateCode();
         districtCode = cardDataFilter.getDistrictCode();
@@ -88,7 +90,7 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
             if (villageCode != null) {
 
-                usersList = usersRepository.findAllBy(villageCode, ageBar, gender, employedCode, schemeCode);
+                usersList = usersRepository.findAllBy(villageCode, ageBar,gender);
 
 
                 if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
@@ -411,13 +413,13 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
     }
 
 
-    public List<Users> locationFilter(Validation validation) {
+    public List<Users> CountsLocationFilter(ValidationCounts validationCounts) {
 
-        stateCode = validation.getStateCode();
-        districtCode = validation.getDistrictCode();
-        tehsilCode = validation.getTehsilCode();
-        blockCode = validation.getBlockCode();
-        villageCode = validation.getVillageCode();
+        stateCode = validationCounts.getStateCode();
+        districtCode = validationCounts.getDistrictCode();
+        tehsilCode = validationCounts.getTehsilCode();
+        blockCode = validationCounts.getBlockCode();
+        villageCode = validationCounts.getVillageCode();
 
         if (stateCode != null) {
             if (villageCode != null) {
@@ -433,7 +435,35 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
             }
 
         } else {
-            throw new HttpMessageNotReadableException(validation.getStateCode());
+            throw new HttpMessageNotReadableException(validationCounts.getStateCode());
+        }
+
+        return usersList;
+    }
+
+    public List<Users> UsersLocationFilter(ValidationUsersDetails validationUsersDetails) {
+
+        stateCode = validationUsersDetails.getStateCode();
+        districtCode = validationUsersDetails.getDistrictCode();
+        tehsilCode = validationUsersDetails.getTehsilCode();
+        blockCode = validationUsersDetails.getBlockCode();
+        villageCode = validationUsersDetails.getVillageCode();
+
+        if (stateCode != null) {
+            if (villageCode != null) {
+                usersList = usersRepository.findByVillageCode(villageCode);
+            } else if (blockCode != null) {
+                usersList = usersRepository.findAllByBlockCode(blockCode);
+            } else if (tehsilCode != null) {
+                usersList = usersRepository.findAllByTehsilCode(tehsilCode);
+            } else if (districtCode != null) {
+                usersList = usersRepository.findAllByDistrictCode(districtCode);
+            } else {
+                usersList = usersRepository.findAllByStateCode(stateCode);
+            }
+
+        } else {
+            throw new HttpMessageNotReadableException(validationUsersDetails.getStateCode());
         }
 
         return usersList;
@@ -474,24 +504,119 @@ public class ServeyorServiceImpl implements ServeyorService, ApplicationConstant
 
 
     @Override
-    public Validation getValidationStatus(Validation validation) {
-        usersList = locationFilter(validation);
-
-        Validation showDetails = Validation.builder()
-                .stateCode(validation.getStateCode())
-                .districtCode(validation.getDistrictCode())
-                .tehsilCode(validation.getTehsilCode())
-                .blockCode(validation.getBlockCode())
-                .villageCode(validation.getVillageCode())
-                .categoryCode(validation.getCategoryCode())
+    public ValidationCounts getValidationStatus(ValidationCounts validationCounts) {
+        usersList = CountsLocationFilter(validationCounts);
+        ValidationCounts showDetails = ValidationCounts.builder()
+                .stateCode(validationCounts.getStateCode())
+                .districtCode(validationCounts.getDistrictCode())
+                .tehsilCode(validationCounts.getTehsilCode())
+                .blockCode(validationCounts.getBlockCode())
+                .villageCode(validationCounts.getVillageCode())
+                .categoryCode(validationCounts.getCategoryCode())
                 .completedRecords(getCompletedProfileCounts(usersList))
                 .validationPending(getValidationPendingCounts(usersList))
                 .approvalPending(getApprovalPendingCounts(usersList))
                 .approved(getApprovalCompletedCounts(usersList))
                 .build();
-
         return showDetails;
+    }
 
+    @Override
+    public List<ValidationUsersDetails> getCompletedUserDetails(ValidationUsersDetails validationUsersDetails) {
+        List<ValidationUsersDetails> list = new ArrayList<>();
+        usersList = UsersLocationFilter(validationUsersDetails);
+
+        usersList = usersRepository.findAllByVerificationStatusAndProfileStatus(approvedByAdmins, profileCompleted);
+        usersList.stream();
+
+
+        for (Users users : usersList) {
+            validationUsersDetails = ValidationUsersDetails.builder()
+                    .name(users.getFullName())
+                    .address(users.getAddress())
+                    .stateCode(validationUsersDetails.getStateCode())
+                    .districtCode(validationUsersDetails.getDistrictCode())
+                    .tehsilCode(validationUsersDetails.getTehsilCode())
+                    .blockCode(validationUsersDetails.getBlockCode())
+                    .villageCode(validationUsersDetails.getVillageCode())
+                    .categoryCode(validationUsersDetails.getCategoryCode())
+                    .build();
+            list.add(validationUsersDetails);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<ValidationUsersDetails> getVerifyPendingUserDetails(ValidationUsersDetails validationUsersDetails) {
+        List<ValidationUsersDetails> list = new ArrayList<>();
+        usersList = UsersLocationFilter(validationUsersDetails);
+
+        usersList = usersRepository.findAllByVerificationStatusAndProfileStatus(verifyPending, profileNotCompleted);
+        usersList.stream();
+        for (Users users : usersList) {
+            validationUsersDetails = ValidationUsersDetails.builder()
+                    .name(users.getFullName())
+                    .address(users.getAddress())
+                    .stateCode(validationUsersDetails.getStateCode())
+                    .districtCode(validationUsersDetails.getDistrictCode())
+                    .tehsilCode(validationUsersDetails.getTehsilCode())
+                    .blockCode(validationUsersDetails.getBlockCode())
+                    .villageCode(validationUsersDetails.getVillageCode())
+                    .categoryCode(validationUsersDetails.getCategoryCode())
+                    .build();
+            list.add(validationUsersDetails);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<ValidationUsersDetails> getApprovalPendingUserDetails(ValidationUsersDetails validationUsersDetails) {
+        List<ValidationUsersDetails> list = new ArrayList<>();
+        usersList = UsersLocationFilter(validationUsersDetails);
+
+        usersList = usersRepository.findAllByVerificationStatusAndProfileStatus(submittedForApproval, profileNotCompleted);
+        usersList.stream();
+        for (Users users : usersList) {
+            validationUsersDetails = ValidationUsersDetails.builder()
+                    .name(users.getFullName())
+                    .address(users.getAddress())
+                    .stateCode(validationUsersDetails.getStateCode())
+                    .districtCode(validationUsersDetails.getDistrictCode())
+                    .tehsilCode(validationUsersDetails.getTehsilCode())
+                    .blockCode(validationUsersDetails.getBlockCode())
+                    .villageCode(validationUsersDetails.getVillageCode())
+                    .categoryCode(validationUsersDetails.getCategoryCode())
+                    .build();
+            list.add(validationUsersDetails);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<ValidationUsersDetails> getApprovedUserDetails(ValidationUsersDetails validationUsersDetails) {
+        List<ValidationUsersDetails> list = new ArrayList<>();
+        usersList = UsersLocationFilter(validationUsersDetails);
+
+        usersList = usersRepository.findAllByVerificationStatus(approvedByAdmins);
+        usersList.stream();
+        for (Users users : usersList) {
+            validationUsersDetails = ValidationUsersDetails.builder()
+                    .name(users.getFullName())
+                    .address(users.getAddress())
+                    .stateCode(validationUsersDetails.getStateCode())
+                    .districtCode(validationUsersDetails.getDistrictCode())
+                    .tehsilCode(validationUsersDetails.getTehsilCode())
+                    .blockCode(validationUsersDetails.getBlockCode())
+                    .villageCode(validationUsersDetails.getVillageCode())
+                    .categoryCode(validationUsersDetails.getCategoryCode())
+                    .build();
+            list.add(validationUsersDetails);
+        }
+
+        return list;
     }
 
     @Override

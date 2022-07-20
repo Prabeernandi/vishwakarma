@@ -9,17 +9,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Validation {
+public class ValidationUsersDetails {
 
-    private String employedCode;
+    private String name;
+    private String address;
     private String stateCode;
     private String districtCode;
     private String tehsilCode;
     private String blockCode;
     private String villageCode;
     private String categoryCode;
-    private long completedRecords;
-    private long validationPending;
-    private long approvalPending;
-    private long approved;
 }

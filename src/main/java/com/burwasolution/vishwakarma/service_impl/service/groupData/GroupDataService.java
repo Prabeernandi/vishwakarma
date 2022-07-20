@@ -1,7 +1,7 @@
 package com.burwasolution.vishwakarma.service_impl.service.groupData;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedDetailsDTO;
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.DashboardUserDetails;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualMemberDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
@@ -24,8 +24,8 @@ public interface GroupDataService {
 
     List<TableDataFilter> findByTableDataFilter(TableDataFilter tableDataFilter);
 
-    List<EmployedType> getListOfEmployedTypes(EmployedType employedType);
-    List<EmployedType> getSchemeTypeList(EmployedType cardDataFilter);
+    List<DashboardUserDetails> getListOfEmployedTypes(DashboardUserDetails dashboardUserDetails);
+    List<DashboardUserDetails> getSchemeTypeList(DashboardUserDetails cardDataFilter);
     List<FamilyListDTO> getFamilyList(CardDataFilterDTO cardDataFilter);
-    List<Users> getListOfCounts(EmployedType employedType);
+    List<Users> getListOfCounts(DashboardUserDetails dashboardUserDetails);
 }

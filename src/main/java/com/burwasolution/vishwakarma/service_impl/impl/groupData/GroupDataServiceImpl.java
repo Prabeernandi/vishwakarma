@@ -1,8 +1,8 @@
 package com.burwasolution.vishwakarma.service_impl.impl.groupData;
 
 import com.burwasolution.vishwakarma.config.utils.ApplicationConstant;
+import com.burwasolution.vishwakarma.domains.dto.response.groupData.DashboardUserDetails;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedDetailsDTO;
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualMemberDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.headerFilter.CardDataFilterDTO;
@@ -35,7 +35,7 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
     String stateCode = null, districtCode = null, tehsilCode = null, blockCode = null,
             villageCode = null, category = null, ageBar = null, gender = null,
             employedCode = null, schemeCode = null, name = null;
-    List<Users> usersList = new ArrayList<>();
+
     private final ImageUploadRepository imageUploadRepository;
 
 
@@ -56,7 +56,7 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
         CardDataFilter cardDataFilter2 = new CardDataFilter();
         List<CardDataFilter> cardDataFilterList = new ArrayList<>();
 
-        EmployedType mapper = modelMapper.map(cardDataFilter, EmployedType.class);
+        DashboardUserDetails mapper = modelMapper.map(cardDataFilter, DashboardUserDetails.class);
         usersList = getListOfCounts(mapper);
 
         ArrayList<String> list = new ArrayList<>();
@@ -116,7 +116,7 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
         for (Users usersListDetails : usersList) {
 
             if (usersListDetails.getRationCardNumber() != null) {
-                rationUrl = baseUrl + "icon/";
+                rationUrl = baseUrl + "icon/ic_ration_card.png";
             }
             if (usersListDetails.isHasPradhanMantriAwaasYojna()) {
                 pmAwaasUrl = baseUrl + "icon/Pradhan-Mantri-Aawas-Yojna.png";
@@ -258,7 +258,7 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
     }
 
     public CardDataFilter getFinalCardData(String type, CardDataFilterDTO cardDataFilter) {
-
+        List<Users> usersList = new ArrayList<>();
         stateCode = cardDataFilter.getStateCode();
         districtCode = cardDataFilter.getDistrictCode();
         tehsilCode = cardDataFilter.getTehsilCode();
@@ -276,69 +276,232 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
 
             if (villageCode != null) {
 
-                usersList = usersRepository.findAllBy(villageCode,ageBar,gender,employedCode,schemeCode);
 
+                 if(ageBar != null && gender == null && schemeCode == null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode,ageBar);
+                 }
+                 else if(ageBar != null && gender != null && schemeCode == null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndEmployedCode(villageCode,ageBar,employedCode);
+                 }
+                 else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndGenderAndSchemeCode(villageCode,gender,schemeCode);
+                 }
+                 else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndSchemeCodeAndEmployedCode(villageCode,schemeCode,employedCode);
+                 }
 
-                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBar(villageCode, ageBar);
-                    log.error("size " + usersList.size());
-                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGender(villageCode, ageBar, gender);
-                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCode(villageCode, ageBar, gender, employedCode);
-                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode, ageBar, gender, employedCode, schemeCode);
-                } else {
+                 else if(ageBar != null && gender == null && schemeCode != null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndSchemeCode(villageCode,ageBar, schemeCode);
+                 }
+                 else if(ageBar != null && gender == null && schemeCode == null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndEmployedCode(villageCode,ageBar, employedCode);
+                 }
+
+                 else if(ageBar == null && gender != null && schemeCode == null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndGenderAndEmployedCode(villageCode,gender, employedCode);
+                 }
+                 else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndGenderAndSchemeCode(villageCode,gender, schemeCode);
+                 }
+                 else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndSchemeCodeAndEmployedCode(villageCode,schemeCode,employedCode);
+                 }
+
+                 else if(ageBar == null && gender != null && schemeCode == null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndGender(villageCode,gender);
+                 }
+                 else if(ageBar == null && gender == null && schemeCode != null && employedCode == null){
+                     usersList = usersRepository.findAllByVillageCodeAndSchemeCode(villageCode,schemeCode);
+                 }
+                 else if(ageBar == null && gender == null && schemeCode == null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndEmployedCode(villageCode,employedCode);
+                 }
+                 else if(ageBar != null && gender != null && schemeCode != null && employedCode != null){
+                     usersList = usersRepository.findAllByVillageCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(villageCode,ageBar,gender,employedCode,schemeCode);
+                 }
+                 else {
                     usersList = usersRepository.findAllByVillageCode(villageCode);
                 }
 
             } else if (blockCode != null) {
-                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByBlockCodeAndAgeBar(blockCode, ageBar);
-                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGender(blockCode, ageBar, gender);
-                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCode(blockCode, ageBar, gender, employedCode);
-                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode, ageBar, gender, employedCode, schemeCode);
+                if(ageBar != null && gender == null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBar(blockCode,ageBar);
+                }
+                else if(ageBar != null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndEmployedCode(blockCode,ageBar,employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndGenderAndSchemeCode(blockCode,gender,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndSchemeCodeAndEmployedCode(blockCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar != null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndSchemeCode(blockCode,ageBar, schemeCode);
+                }
+                else if(ageBar != null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndEmployedCode(blockCode,ageBar, employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndGenderAndEmployedCode(blockCode,gender, employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndGenderAndSchemeCode(blockCode,gender, schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndSchemeCodeAndEmployedCode(blockCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndGender(blockCode,gender);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByBlockCodeAndSchemeCode(blockCode,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndEmployedCode(blockCode,employedCode);
+                }
+                else if(ageBar != null && gender != null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByBlockCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode,ageBar,gender,employedCode,schemeCode);
                 } else {
                     usersList = usersRepository.findAllByBlockCode(blockCode);
                 }
             } else if (tehsilCode != null) {
-                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBar(tehsilCode, ageBar);
-                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGender(tehsilCode, ageBar, gender);
-                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCode(tehsilCode, ageBar, gender, employedCode);
-                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(tehsilCode, ageBar, gender, employedCode, schemeCode);
+                if(ageBar != null && gender == null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBar(tehsilCode,ageBar);
+                }
+                else if(ageBar != null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndEmployedCode(tehsilCode,ageBar,employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndGenderAndSchemeCode(tehsilCode,gender,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndSchemeCodeAndEmployedCode(tehsilCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar != null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndSchemeCode(tehsilCode,ageBar, schemeCode);
+                }
+                else if(ageBar != null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndEmployedCode(tehsilCode,ageBar, employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndGenderAndEmployedCode(tehsilCode,gender, employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndGenderAndSchemeCode(tehsilCode,gender, schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndSchemeCodeAndEmployedCode(tehsilCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndGender(tehsilCode,gender);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByTehsilCodeAndSchemeCode(tehsilCode,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndEmployedCode(tehsilCode,employedCode);
+                }
+                else if(ageBar != null && gender != null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByTehsilCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode,ageBar,gender,employedCode,schemeCode);
                 } else {
                     usersList = usersRepository.findAllByTehsilCode(tehsilCode);
                 }
 
             } else if (districtCode != null) {
-                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBar(districtCode, ageBar);
-                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGender(districtCode, ageBar, gender);
-                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCode(districtCode, ageBar, gender, employedCode);
-                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(districtCode, ageBar, gender, employedCode, schemeCode);
+                if(ageBar != null && gender == null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBar(districtCode,ageBar);
+                }
+                else if(ageBar != null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndEmployedCode(districtCode,ageBar,employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndGenderAndSchemeCode(districtCode,gender,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndSchemeCodeAndEmployedCode(districtCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar != null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndSchemeCode(districtCode,ageBar, schemeCode);
+                }
+                else if(ageBar != null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndEmployedCode(districtCode,ageBar, employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndGenderAndEmployedCode(districtCode,gender, employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndGenderAndSchemeCode(districtCode,gender, schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndSchemeCodeAndEmployedCode(districtCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndGender(districtCode,gender);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByDistrictCodeAndSchemeCode(districtCode,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndEmployedCode(districtCode,employedCode);
+                }
+                else if(ageBar != null && gender != null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByDistrictCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(blockCode,ageBar,gender,employedCode,schemeCode);
                 } else {
                     usersList = usersRepository.findAllByDistrictCode(districtCode);
                 }
             } else {
 
-                if (ageBar != null && gender == null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByStateCodeAndAgeBar(stateCode, ageBar);
-                } else if (ageBar != null && gender != null && schemeCode == null && employedCode == null) {
-                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGender(stateCode, ageBar, gender);
-                } else if (ageBar != null && gender != null && employedCode != null && schemeCode == null) {
-                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGenderAndEmployedCode(stateCode, ageBar, gender, employedCode);
-                } else if (ageBar != null && gender != null && schemeCode != null && employedCode != null) {
-                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(stateCode, ageBar, gender, employedCode, schemeCode);
+                if(ageBar != null && gender == null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndAgeBar(districtCode,ageBar);
+                }
+                else if(ageBar != null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndEmployedCode(stateCode,ageBar,employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndGenderAndSchemeCode(stateCode,gender,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndSchemeCodeAndEmployedCode(stateCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar != null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndSchemeCode(stateCode,ageBar, schemeCode);
+                }
+                else if(ageBar != null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndEmployedCode(stateCode,ageBar, employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndGenderAndEmployedCode(stateCode,gender, employedCode);
+                }
+                else if(ageBar == null && gender != null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndGenderAndSchemeCode(stateCode,gender, schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndSchemeCodeAndEmployedCode(stateCode,schemeCode,employedCode);
+                }
+
+                else if(ageBar == null && gender != null && schemeCode == null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndGender(stateCode,gender);
+                }
+                else if(ageBar == null && gender == null && schemeCode != null && employedCode == null){
+                    usersList = usersRepository.findAllByStateCodeAndSchemeCode(stateCode,schemeCode);
+                }
+                else if(ageBar == null && gender == null && schemeCode == null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndEmployedCode(stateCode,employedCode);
+                }
+                else if(ageBar != null && gender != null && schemeCode != null && employedCode != null){
+                    usersList = usersRepository.findAllByStateCodeAndAgeBarAndGenderAndEmployedCodeAndSchemeCode(stateCode,ageBar,gender,employedCode,schemeCode);
                 } else {
                     usersList = usersRepository.findAllByStateCode(stateCode);
                 }
@@ -426,86 +589,82 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
     }
 
     @Override
-    public List<EmployedType> getListOfEmployedTypes(EmployedType cardDataFilter) {
+    public List<DashboardUserDetails> getListOfEmployedTypes(DashboardUserDetails cardDataFilter) {
 
         List<Users> usersList = new ArrayList<>();
-        ArrayList<String> listOfEmployed = new ArrayList<>();
-        ArrayList<String> finalEmployedList = new ArrayList<>();
-        EmployedType cardDataFilter2 = new EmployedType();
-        List<EmployedType> cardDataFilterList = new ArrayList<>();
-        String fullName = "";
+        DashboardUserDetails cardDataFilter2 = new DashboardUserDetails();
+        List<DashboardUserDetails> cardDataFilterList = new ArrayList<>();
 
         usersList = getListOfCounts(cardDataFilter);
 
         for (Users arr : usersList) {
+            if (!arr.getEmployedCode().equals("")) {
 
-            if (!listOfEmployed.contains(arr.getEmployed())) {
-                listOfEmployed.add(arr.getEmployed());
-                fullName = arr.getFullName();
+                cardDataFilter2 = DashboardUserDetails.builder()
+                        .name(arr.getFullName())
+                        .address(arr.getAddress())
+                        .stateCode(cardDataFilter.getStateCode())
+                        .districtCode(cardDataFilter.getDistrictCode())
+                        .tehsilCode(cardDataFilter.getTehsilCode())
+                        .blockCode(cardDataFilter.getBlockCode())
+                        .villageCode(cardDataFilter.getVillageCode())
+                        .categoryCode(cardDataFilter.getCategoryCode())
+                        .gender(cardDataFilter.getGender())
+                        .employedCode(arr.getEmployedCode() == null ? "" : arr.getEmployedCode())
+                        .ageBar(cardDataFilter.getAgeBar())
+                        .build();
+                cardDataFilterList.add(cardDataFilter2);
             }
-
-        }
-        String[] list2 = listOfEmployed.parallelStream().toArray(String[]::new);
-
-        for (String list3 : list2) {
-            String[] removeComma = list3.split(",");
-
-            for (String secondList : removeComma) {
-                if (!finalEmployedList.contains(secondList)) {
-                    finalEmployedList.add(secondList.trim());
-                    finalEmployedList.removeAll(Collections.singleton(""));
-                }
-            }
-        }
-        String[] list4 = finalEmployedList.parallelStream().toArray(String[]::new);
-
-        String employedId = "";
-        for (String list5 : list4) {
-
-            if (list5.equals("Farmer")) {
-                employedId = "fr01";
-            }
-            if (list5.equals("Daily Worker")) {
-                employedId = "dw01";
-            }
-            if (list5.equals("Artisan")) {
-                employedId = "ar01";
-            }
-
-
-            cardDataFilter2 = EmployedType.builder()
-                    .name(fullName)
-                    .stateCode(cardDataFilter.getStateCode())
-                    .districtCode(cardDataFilter.getDistrictCode())
-                    .tehsilCode(cardDataFilter.getTehsilCode())
-                    .blockCode(cardDataFilter.getBlockCode())
-                    .villageCode(cardDataFilter.getVillageCode())
-                    .categoryCode(cardDataFilter.getCategoryCode())
-                    .gender(cardDataFilter.getGender())
-                    .employedCode(employedId == null ? "" : employedId)
-                    .ageBar(cardDataFilter.getAgeBar())
-                    .build();
-            cardDataFilterList.add(cardDataFilter2);
         }
 
         return cardDataFilterList;
     }
 
     @Override
-    public List<Users> getListOfCounts(EmployedType employedType) {
+    public List<DashboardUserDetails> getSchemeTypeList(DashboardUserDetails cardDataFilter) {
+        List<Users> usersList = new ArrayList<>();
+        DashboardUserDetails cardDataFilter2 = new DashboardUserDetails();
+        List<DashboardUserDetails> cardDataFilterList = new ArrayList<>();
 
-        stateCode = employedType.getStateCode();
-        districtCode = employedType.getDistrictCode();
-        tehsilCode = employedType.getTehsilCode();
-        blockCode = employedType.getBlockCode();
-        villageCode = employedType.getVillageCode();
-        category = employedType.getCategoryCode();
-        ageBar = employedType.getAgeBar();
-        gender = employedType.getGender();
-        employedCode = employedType.getEmployedCode();
-        schemeCode = employedType.getSchemeCode();
-        EmployedType cardDataFilter2 = new EmployedType();
-        List<EmployedType> cardDataFilterList = new ArrayList<>();
+        usersList = getListOfCounts(cardDataFilter);
+        for (Users arr : usersList) {
+                if(!arr.getSchemeCode().equals("")) {
+                    cardDataFilter2 = DashboardUserDetails.builder()
+                            .name(arr.getFullName())
+                            .address(arr.getAddress())
+                            .stateCode(cardDataFilter.getStateCode())
+                            .districtCode(cardDataFilter.getDistrictCode())
+                            .tehsilCode(cardDataFilter.getTehsilCode())
+                            .schemeCode(arr.getSchemeCode())
+                            .blockCode(cardDataFilter.getBlockCode())
+                            .villageCode(cardDataFilter.getVillageCode())
+                            .categoryCode(cardDataFilter.getCategoryCode())
+                            .gender(cardDataFilter.getGender())
+                            .employedCode(arr.getEmployedCode() == null ? "" : arr.getEmployedCode())
+                            .ageBar(cardDataFilter.getAgeBar())
+                            .build();
+                    cardDataFilterList.add(cardDataFilter2);
+                }
+        }
+        return cardDataFilterList;
+
+    }
+
+    @Override
+    public List<Users> getListOfCounts(DashboardUserDetails dashboardUserDetails) {
+        List<Users> usersList = new ArrayList<>();
+        stateCode = dashboardUserDetails.getStateCode();
+        districtCode = dashboardUserDetails.getDistrictCode();
+        tehsilCode = dashboardUserDetails.getTehsilCode();
+        blockCode = dashboardUserDetails.getBlockCode();
+        villageCode = dashboardUserDetails.getVillageCode();
+        category = dashboardUserDetails.getCategoryCode();
+        ageBar = dashboardUserDetails.getAgeBar();
+        gender = dashboardUserDetails.getGender();
+        employedCode = dashboardUserDetails.getEmployedCode();
+        schemeCode = dashboardUserDetails.getSchemeCode();
+        DashboardUserDetails cardDataFilter2 = new DashboardUserDetails();
+        List<DashboardUserDetails> cardDataFilterList = new ArrayList<>();
 
         if (stateCode != null) {
 
@@ -580,73 +739,8 @@ public class GroupDataServiceImpl implements GroupDataService, ApplicationConsta
 
 
         } else {
-            throw new HttpMessageNotReadableException(employedType.getStateCode());
+            throw new HttpMessageNotReadableException(dashboardUserDetails.getStateCode());
         }
-    }
-
-    @Override
-    public List<EmployedType> getSchemeTypeList(EmployedType cardDataFilter) {
-
-        EmployedType cardDataFilter2 = new EmployedType();
-        ArrayList<String> listOfEmployed = new ArrayList<>();
-        ArrayList<String> finalEmployedList = new ArrayList<>();
-        List<EmployedType> cardDataFilterList = new ArrayList<>();
-
-        usersList = getListOfCounts(cardDataFilter);
-
-
-        for (Users arr : usersList) {
-
-
-            if (!listOfEmployed.contains(arr.getGovtSchemeEnrolled())) {
-                listOfEmployed.add(arr.getGovtSchemeEnrolled());
-            }
-
-        }
-        String[] list2 = listOfEmployed.parallelStream().toArray(String[]::new);
-        for (String list3 : list2) {
-            String[] removeComma = list3.split(",");
-
-            for (String secondList : removeComma) {
-                if (!finalEmployedList.contains(secondList)) {
-                    finalEmployedList.add(secondList.trim());
-                    finalEmployedList.removeAll(Collections.singleton(""));
-
-                }
-            }
-        }
-        String[] list4 = finalEmployedList.parallelStream().toArray(String[]::new);
-        String schemeCodes = "";
-        for (String list5 : list4) {
-            if (list5.equals("RationCard")) {
-                schemeCodes = "RC01";
-            }
-            if (list5.equals("PMKisaanYojana")) {
-                schemeCodes = "RMKY01";
-            }
-            if (list5.equals("PMAwaasYojana")) {
-                schemeCodes = "PMAY01";
-            }
-
-            cardDataFilter2 = EmployedType.builder()
-                    .name(list5)
-                    .stateCode(cardDataFilter.getStateCode())
-                    .districtCode(cardDataFilter.getDistrictCode())
-                    .tehsilCode(cardDataFilter.getTehsilCode())
-                    .blockCode(cardDataFilter.getBlockCode())
-                    .villageCode(cardDataFilter.getVillageCode())
-                    .categoryCode(cardDataFilter.getCategoryCode())
-                    .gender(cardDataFilter.getGender())
-                    .employedCode(schemeCodes == null ? "" : schemeCodes)
-                    .ageBar(cardDataFilter.getAgeBar())
-                    .build();
-            cardDataFilterList.add(cardDataFilter2);
-
-        }
-
-
-        return cardDataFilterList;
-
     }
 
 

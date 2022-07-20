@@ -1,7 +1,8 @@
 package com.burwasolution.vishwakarma.controller;
 
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
-import com.burwasolution.vishwakarma.domains.dto.users.Validation;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationCounts;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationUsersDetails;
 import com.burwasolution.vishwakarma.service_impl.service.groupData.ServeyorService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,14 +94,6 @@ public class ServeyorController {
     }
 
 
-    @PostMapping("/getValidationStatus")
-    private ResponseEntity<?> getValidationStatus(@RequestBody Validation validation) {
-        Map<String, Object> getValidationStatus = new HashMap<>();
-        getValidationStatus.put("status", HttpStatus.OK);
-        getValidationStatus.put("result", serveyorService.getValidationStatus(validation));
-        getValidationStatus.put("message", "Completed Records Counts");
-        return new ResponseEntity<>(getValidationStatus, HttpStatus.OK);
-    }
 
 
 

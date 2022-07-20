@@ -1,13 +1,13 @@
 package com.burwasolution.vishwakarma.service_impl.service.groupData;
 
-import com.burwasolution.vishwakarma.domains.dto.response.groupData.EmployedType;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.FamilyListDTO;
 import com.burwasolution.vishwakarma.domains.dto.response.groupData.IndividualListDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.GovtSchemesDTO;
 import com.burwasolution.vishwakarma.domains.dto.users.ImageUploadDTO;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationUsersDetails;
 import com.burwasolution.vishwakarma.domains.entity.basic.Employed;
 import com.burwasolution.vishwakarma.domains.entity.basic.FamilyMembersDetails;
-import com.burwasolution.vishwakarma.domains.dto.users.Validation;
+import com.burwasolution.vishwakarma.domains.dto.users.ValidationCounts;
 import javassist.NotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +29,14 @@ public interface ServeyorService {
 
     List<FamilyListDTO> getFamilyList(String familyId);
 
-    Validation getValidationStatus(Validation validation);
+    ValidationCounts getValidationStatus(ValidationCounts validationCounts);
+
+    List<ValidationUsersDetails> getCompletedUserDetails(ValidationUsersDetails validationUsersDetails);
+
+    List<ValidationUsersDetails> getVerifyPendingUserDetails(ValidationUsersDetails validationUsersDetails);
+
+    List<ValidationUsersDetails> getApprovalPendingUserDetails(ValidationUsersDetails validationUsersDetails);
+
+    List<ValidationUsersDetails> getApprovedUserDetails(ValidationUsersDetails validationUsersDetails);
 }
 

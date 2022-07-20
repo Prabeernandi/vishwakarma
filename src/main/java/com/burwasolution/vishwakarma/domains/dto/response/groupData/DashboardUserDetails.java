@@ -1,0 +1,28 @@
+package com.burwasolution.vishwakarma.domains.dto.response.groupData;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class DashboardUserDetails {
+
+    private String name;
+    private String address;
+    private String employedCode;
+    private String stateCode;
+    private String districtCode;
+    private String tehsilCode;
+    private String blockCode;
+    private String villageCode;
+    private String categoryCode;
+    private String ageBar;
+    private String gender;
+    private String counts;
+    private String schemeCode;
+    private String vMulCode;
+}
